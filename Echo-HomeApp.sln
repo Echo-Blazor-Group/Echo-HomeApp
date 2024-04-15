@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34511.84
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Echo-HomeApp", "Echo-HomeApp\Echo-HomeApp.csproj", "{7C279232-427C-4D81-A149-74D9AFC4FA5D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Echo-HomeApp.Client", "Echo-HomeApp.Client\Echo-HomeApp.Client.csproj", "{A48B26B2-D943-40DB-98D2-17E1199D70B6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7C279232-427C-4D81-A149-74D9AFC4FA5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C279232-427C-4D81-A149-74D9AFC4FA5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C279232-427C-4D81-A149-74D9AFC4FA5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C279232-427C-4D81-A149-74D9AFC4FA5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A48B26B2-D943-40DB-98D2-17E1199D70B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A48B26B2-D943-40DB-98D2-17E1199D70B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A48B26B2-D943-40DB-98D2-17E1199D70B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A48B26B2-D943-40DB-98D2-17E1199D70B6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E3E8ECB2-381E-471E-BAE4-FDBCD9B41C42}
+	EndGlobalSection
+EndGlobal
