@@ -11,8 +11,22 @@ namespace Echo_HomeApp
             // Add services to the container.
             builder.Services.AddRazorComponents()
                 .AddInteractiveWebAssemblyComponents();
+            
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy( "Blazor",
+                    policyBuilder =>
+                    {
+                        policyBuilder.WithOrigins("https://localhost:7190")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials();
+                    });
+            });
 
             var app = builder.Build();
+
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -27,13 +41,17 @@ namespace Echo_HomeApp
             }
 
             app.UseHttpsRedirection();
+            
 
             app.UseStaticFiles();
             app.UseAntiforgery();
+           
 
             app.MapRazorComponents<App>()
                 .AddInteractiveWebAssemblyRenderMode()
                 .AddAdditionalAssemblies(typeof(Client._Imports).Assembly);
+
+            app.UseCors("Blazor");
 
             app.Run();
         }

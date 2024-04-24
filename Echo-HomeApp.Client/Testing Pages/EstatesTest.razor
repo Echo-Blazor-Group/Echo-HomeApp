@@ -1,0 +1,70 @@
+﻿@page "/Estates"
+@using DTOs
+@inject HttpClient http
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+
+
+<PageTitle>Estates Test</PageTitle>
+
+<h3>Estates Test</h3>
+@if (estates.Count == 0)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Estate.Address</th>
+                <th>Starting Price</th>
+                <th>Living Area Kvm</th>
+                <th>NumberOfRooms</th>
+                <th>BiAreaKvm</th>
+                <th>EstateAreaKvm</th>
+                <th>MonthlyFee</th>
+                <th>RunningCosts</th>
+                <th>ConstructionDate</th>
+                <th>EstateDescription</th>
+                <th>PublishDate</th>
+                <th>County</th>
+                <th>Category</th>
+                <th>Realtor</th>
+            </tr>
+        </thead>
+    </table>
+    @foreach (var estate in estates)
+    {
+        <tr>
+            <td>@estate.Address</td>
+            <td>@estate.StartingPrice</td>
+            <td>@estate.LivingAreaKvm</td>
+            <td>@estate.NumberOfRooms</td>
+            <td>@estate.BiAreaKvm</td>
+            <td>@estate.EstateAreaKvm</td>
+            <td>@estate.MonthlyFee</td>
+            <td>@estate.RunningCosts</td>
+            <td>@estate.ConstructionDate</td>
+            <td>@estate.EstateDescription</td>
+            <td>@estate.PublishDate</td>
+            <td>@estate.County</td>
+            <td>@estate.Category</td>
+            <td>@estate.Realtor</td>
+            <td></td>
+        </tr>
+    }
+}
+
+@code {
+    
+    List<EstateDto> estates = new List<EstateDto>();
+    protected override async Task OnInitializedAsync()
+    {
+
+        await Task.Delay(500);
+        
+        var result = await http.GetFromJsonAsync<List<EstateDto>>("https://localhost:7190/api/Estate");
+        if (result is not null) estates = result;
+    }
+}
