@@ -1,4 +1,5 @@
 using Echo_HomeApp.Components;
+using Microsoft.Extensions.Options;
 
 namespace Echo_HomeApp
 {
@@ -11,19 +12,7 @@ namespace Echo_HomeApp
             // Add services to the container.
             builder.Services.AddRazorComponents()
                 .AddInteractiveWebAssemblyComponents();
-            
-
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy( "Blazor",
-                    policyBuilder =>
-                    {
-                        policyBuilder.WithOrigins("https://localhost:7190")
-                        .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .AllowCredentials();
-                    });
-            });
+            builder.Services.AddBlazorBootstrap();
 
             var app = builder.Build();
 
@@ -31,6 +20,7 @@ namespace Echo_HomeApp
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
+ 
                 app.UseWebAssemblyDebugging();
             }
             else
@@ -51,7 +41,6 @@ namespace Echo_HomeApp
                 .AddInteractiveWebAssemblyRenderMode()
                 .AddAdditionalAssemblies(typeof(Client._Imports).Assembly);
 
-            app.UseCors("Blazor");
 
             app.Run();
         }

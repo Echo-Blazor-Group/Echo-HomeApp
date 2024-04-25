@@ -10,7 +10,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Echo-HomeApp", "Echo-HomeAp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Echo-HomeApp.Client", "Echo-HomeApp.Client\Echo-HomeApp.Client.csproj", "{A48B26B2-D943-40DB-98D2-17E1199D70B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Echo-HomeApp.Shared", "Entities\Echo-HomeApp.Shared.csproj", "{81322FC4-0AFE-4301-96DB-D27774FE96AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Echo-HomeApp.Shared", "Entities\Echo-HomeApp.Shared.csproj", "{81322FC4-0AFE-4301-96DB-D27774FE96AE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

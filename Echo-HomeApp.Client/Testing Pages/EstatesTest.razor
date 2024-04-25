@@ -1,20 +1,23 @@
 ﻿@page "/Estates"
 @using DTOs
 @inject HttpClient http
+@inject NavigationManager NavigationManager
 @rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
 
 
+@*author Gustaf*@
 
-<PageTitle>Estates Test</PageTitle>
+<PageTitle >Estates Test</PageTitle>
 
 <h3>Estates Test</h3>
+<button></button>
 @if (estates.Count == 0)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
-    <table class="table">
+    <table class="table" >
         <thead>
             <tr>
                 <th>Estate.Address</th>
@@ -32,11 +35,12 @@ else
                 <th>Category</th>
                 <th>Realtor</th>
             </tr>
-        </thead>
-    </table>
+        
+    
     @foreach (var estate in estates)
     {
         <tr>
+            <td>@estate.Id</td>
             <td>@estate.Address</td>
             <td>@estate.StartingPrice</td>
             <td>@estate.LivingAreaKvm</td>
@@ -48,23 +52,38 @@ else
             <td>@estate.ConstructionDate</td>
             <td>@estate.EstateDescription</td>
             <td>@estate.PublishDate</td>
-            <td>@estate.County</td>
-            <td>@estate.Category</td>
-            <td>@estate.Realtor</td>
-            <td></td>
+            <td>@estate.County.CountyName</td>
+            <td>@estate.Category.EstateCategory</td>
+            <td>@estate.Realtor.FirstName</td>
+                    <td><button class="btn btn-primary" @onclick="@(() => EstateEdit(@estate.Id))">Edit</button></td>
+           
         </tr>
     }
+        </thead>
+    </table>
 }
+<button class="btn btn-primary" @onclick="EstateAdd">Add A New Estate</button>
 
 @code {
-    
+
     List<EstateDto> estates = new List<EstateDto>();
     protected override async Task OnInitializedAsync()
     {
-
         await Task.Delay(500);
-        
+
         var result = await http.GetFromJsonAsync<List<EstateDto>>("https://localhost:7190/api/Estate");
         if (result is not null) estates = result;
     }
+
+    void EstateAdd()
+    {
+        NavigationManager.NavigateTo("EstateAddTest");
+    }
+
+    void EstateEdit(int id)
+    {
+        NavigationManager.NavigateTo($"EstateEditTest/{id}");
+    }
+
+
 }

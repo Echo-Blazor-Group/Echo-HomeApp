@@ -1,0 +1,96 @@
+﻿@page "/EstateEditTest"
+@page "/EstateEditTest/{id:int}"
+@inject HttpClient Http
+@using DTOs
+
+<h3>EstateEditTest</h3>
+
+@if (Id == null)
+{
+    <h3>Add Estate</h3>
+}
+else
+{
+    <h3>Edit @_Estate.Address</h3>
+}
+
+<EditForm Model="_Estate" OnSubmit="HandleSubmit">
+    <div>
+        <lable onformchange="address"> Adress </lable>
+        <InputText id="Address" @bind-Value="_Estate.Address" class="form-control" />
+    </div>
+    <div>
+        <lable onformchange="address"> Adress </lable>
+        <InputNumber id="StartingPrice" @bind-Value="_Estate.StartingPrice" class="form-control" />
+    </div>
+    <div>
+        <lable onformchange="address"> Adress </lable>
+        <InputText id="LivingAreaKvm" @bind-Value="_Estate.LivingAreaKvm" class="form-control" />
+    </div>
+    <div>
+        <lable onformchange="address"> Adress </lable>
+        <InputText id="NumberOfRooms" @bind-Value="_Estate.NumberOfRooms" class="form-control" />
+    </div>
+    <div>
+        <lable onformchange="address"> Adress </lable>
+        <InputText id="BiAreaKvm" @bind-Value="_Estate.BiAreaKvm" class="form-control" />
+    </div>
+    <div>
+        <lable onformchange="address"> Adress </lable>
+        <InputText id="EstateAreaKvm" @bind-Value="_Estate.EstateAreaKvm" class="form-control" />
+    </div>
+    <div>
+        <lable onformchange="address"> Adress </lable>
+        <InputText id="MonthlyFee" @bind-Value="_Estate.MonthlyFee" class="form-control" />
+    </div>
+    <div>
+        <lable onformchange="address"> Adress </lable>
+        <InputText id="RunningCosts" @bind-Value="_Estate.RunningCosts" class="form-control" />
+    </div>
+    <div>
+        <lable onformchange="address"> Adress </lable>
+        <InputText id="ConstructionDate" @bind-Value="_Estate.ConstructionDate" class="form-control" />
+    </div>
+    <div>
+        <lable onformchange="address"> Adress </lable>
+        <InputText id="EstateDescription" @bind-Value="_Estate.EstateDescription" class="form-control" />
+    </div>
+    <div>
+        <lable onformchange="address"> Adress </lable>
+        <InputDate id="EstateDescription" @bind-Value="_Estate.PublishDate" class="form-control" />
+    </div>
+    <div>
+        <lable onformchange="address"> Adress </lable>
+        <InputNumber id="County" @bind-Value="_Estate.CountyId" class="form-control" />
+    </div>
+    <div>
+        <lable onformchange="address"> Adress </lable>
+        <InputNumber id="Category" @bind-Value="_Estate.CategoryId" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+</EditForm>
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+
+    public UpdateEstateDto _Estate { get; set; } = new UpdateEstateDto();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var result = await Http.GetFromJsonAsync<UpdateEstateDto>($"https://localhost:7190/api/Estate");
+        if (result is not null)
+        {
+            _Estate = result;
+        }
+
+
+    }
+
+    async Task HandleSubmit()
+    {
+        if (Id is not null)
+        {
+            await Http.PutAsJsonAsync($"https://localhost:7190/api/Estate/{Id}", _Estate);
+        }
+    }
+}
