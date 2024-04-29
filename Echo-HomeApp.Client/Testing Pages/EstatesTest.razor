@@ -20,7 +20,8 @@ else
     <table class="table" >
         <thead>
             <tr>
-                <th>Estate.Address</th>
+                @* <th>Id</th> *@
+                <th>Address</th>
                 <th>Starting Price</th>
                 <th>Living Area Kvm</th>
                 <th>NumberOfRooms</th>
@@ -40,7 +41,7 @@ else
     @foreach (var estate in estates)
     {
         <tr>
-            <td>@estate.Id</td>
+            @* <td>@estate.Id</td> *@
             <td>@estate.Address</td>
             <td>@estate.StartingPrice</td>
             <td>@estate.LivingAreaKvm</td>
@@ -54,7 +55,7 @@ else
             <td>@estate.PublishDate</td>
             <td>@estate.County.CountyName</td>
             <td>@estate.Category.EstateCategory</td>
-            <td>@estate.Realtor.FirstName</td>
+            <td>@estate.Realtor.FirstName @estate.Realtor.LastName</td>
                     <td><button class="btn btn-primary" @onclick="@(() => EstateEdit(@estate.Id))">Edit</button></td>
            
         </tr>
@@ -87,3 +88,7 @@ else
 
 
 }
+
+    @*Need to add null check and fix for when calling objects so that the site will load even if and object is broken. Currently when calling on 
+        houses without mäklare or counties or category the site breaks down.
+    *@

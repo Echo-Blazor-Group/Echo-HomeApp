@@ -1,6 +1,8 @@
 ﻿@page "/EstateEditTest"
 @page "/EstateEditTest/{id:int}"
 @inject HttpClient Http
+@inject NavigationManager NavigationManager
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
 @using DTOs
 
 <h3>EstateEditTest</h3>
@@ -20,52 +22,53 @@ else
         <InputText id="Address" @bind-Value="_Estate.Address" class="form-control" />
     </div>
     <div>
-        <lable onformchange="address"> Adress </lable>
+        <lable onformchange="StartingPrice"> StartingPrice </lable>
         <InputNumber id="StartingPrice" @bind-Value="_Estate.StartingPrice" class="form-control" />
     </div>
     <div>
-        <lable onformchange="address"> Adress </lable>
+        <lable onformchange="LivingAreaKvm"> LivingAreaKvm </lable>
         <InputText id="LivingAreaKvm" @bind-Value="_Estate.LivingAreaKvm" class="form-control" />
     </div>
     <div>
-        <lable onformchange="address"> Adress </lable>
+        <lable onformchange="NumberOfRooms"> NumberOfRooms </lable>
         <InputText id="NumberOfRooms" @bind-Value="_Estate.NumberOfRooms" class="form-control" />
     </div>
     <div>
-        <lable onformchange="address"> Adress </lable>
+        <lable onformchange="BiAreaKvm"> BiAreaKvm </lable>
         <InputText id="BiAreaKvm" @bind-Value="_Estate.BiAreaKvm" class="form-control" />
     </div>
     <div>
-        <lable onformchange="address"> Adress </lable>
+        <lable onformchange="EstateAreaKvm"> EstateAreaKvm </lable>
         <InputText id="EstateAreaKvm" @bind-Value="_Estate.EstateAreaKvm" class="form-control" />
     </div>
     <div>
-        <lable onformchange="address"> Adress </lable>
+        <lable onformchange="MonthlyFee"> MonthlyFee </lable>
         <InputText id="MonthlyFee" @bind-Value="_Estate.MonthlyFee" class="form-control" />
     </div>
     <div>
-        <lable onformchange="address"> Adress </lable>
+        <lable onformchange="RunningCosts"> RunningCosts </lable>
         <InputText id="RunningCosts" @bind-Value="_Estate.RunningCosts" class="form-control" />
     </div>
     <div>
-        <lable onformchange="address"> Adress </lable>
+        <lable onformchange="ConstructionDate"> ConstructionDate </lable>
         <InputText id="ConstructionDate" @bind-Value="_Estate.ConstructionDate" class="form-control" />
     </div>
     <div>
-        <lable onformchange="address"> Adress </lable>
+        <lable onformchange="EstateDescription"> EstateDescription </lable>
         <InputText id="EstateDescription" @bind-Value="_Estate.EstateDescription" class="form-control" />
     </div>
     <div>
-        <lable onformchange="address"> Adress </lable>
+        <lable onformchange="PublishDate"> PublishDate </lable>
         <InputDate id="EstateDescription" @bind-Value="_Estate.PublishDate" class="form-control" />
     </div>
     <div>
-        <lable onformchange="address"> Adress </lable>
+        <lable onformchange="County"> County </lable>
         <InputNumber id="County" @bind-Value="_Estate.CountyId" class="form-control" />
     </div>
     <div>
-        <lable onformchange="address"> Adress </lable>
+        <lable onformchange="Category"> Category </lable>
         <InputNumber id="Category" @bind-Value="_Estate.CategoryId" class="form-control" />
+
     </div>
     <button type="submit" class="btn btn-primary">Save</button>
 </EditForm>
@@ -77,20 +80,51 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
-        var result = await Http.GetFromJsonAsync<UpdateEstateDto>($"https://localhost:7190/api/Estate");
+        var result = await Http.GetFromJsonAsync<UpdateEstateDto>($"https://localhost:7190/api/Estate/{(int)Id}");
+
         if (result is not null)
         {
             _Estate = result;
         }
-
-
     }
 
     async Task HandleSubmit()
     {
+
         if (Id is not null)
         {
-            await Http.PutAsJsonAsync($"https://localhost:7190/api/Estate/{Id}", _Estate);
+            var result = await Http.PutAsJsonAsync($"https://localhost:7190/api/Estate/{Id}", _Estate);
+            _Estate = await result.Content.ReadFromJsonAsync<UpdateEstateDto>();
         }
+        // else
+        // {
+        //     var result = await Http.PostAsJsonAsync($"https://localhost:7190/api/Estate/", _Estate);
+        //     _Estate = await result.Content.ReadFromJsonAsync<UpdateEstateDto>();
+        // }
+        NavigationManager.NavigateTo("Estates");
     }
 }
+
+
+
+
+    @*         <select name="County" id="CountyId">
+
+                @foreach (var estate in Estate.County.CountyName)
+               {
+                <option>
+                    @estate
+                </option>
+                }
+        </select>
+        
+            <div>
+        <lable onformchange="County"> County </lable>
+        <InputText id="County.CountyName" @bind-Value="_Estate.County.CountyName" class="form-control" />
+    </div>
+    <div>
+        <lable onformchange="Category"> Category </lable>
+        <InputText id="Category.EstateCategory" @bind-Value="_Estate.Category.EstateCategory" class="form-control" />
+
+    </div>
+        *@
