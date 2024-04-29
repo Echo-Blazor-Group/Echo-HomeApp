@@ -20,6 +20,7 @@ else
     <table class="table" >
         <thead>
             <tr>
+                @* <th>Id</th> *@
                 <th>Address</th>
                 <th>Starting Price</th>
                 <th>Living Area Kvm</th>
@@ -40,7 +41,7 @@ else
     @foreach (var estate in estates)
     {
         <tr>
-            <td>@estate.Id</td>
+            @* <td>@estate.Id</td> *@
             <td>@estate.Address</td>
             <td>@estate.StartingPrice</td>
             <td>@estate.LivingAreaKvm</td>
@@ -54,7 +55,7 @@ else
             <td>@estate.PublishDate</td>
             <td>@estate.County.CountyName</td>
             <td>@estate.Category.EstateCategory</td>
-            <td>@estate.Realtor.FirstName</td>
+            <td>@estate.Realtor.FirstName @estate.Realtor.LastName</td>
                     <td><button class="btn btn-primary" @onclick="@(() => EstateEdit(@estate.Id))">Edit</button></td>
            
         </tr>
