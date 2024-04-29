@@ -20,7 +20,7 @@ else
     <table class="table" >
         <thead>
             <tr>
-                <th>Estate.Address</th>
+                <th>Address</th>
                 <th>Starting Price</th>
                 <th>Living Area Kvm</th>
                 <th>NumberOfRooms</th>
@@ -87,3 +87,7 @@ else
 
 
 }
+
+    @*Need to add null check and fix for when calling objects so that the site will load even if and object is broken. Currently when calling on 
+        houses without mäklare or counties or category the site breaks down.
+    *@
