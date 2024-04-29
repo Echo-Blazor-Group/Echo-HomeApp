@@ -1,0 +1,39 @@
+﻿@page "/RealtorFirms"
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using DTOs
+@using Models
+@inject HttpClient httpClient
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+
+<PageTitle>Realtor firms</PageTitle>
+
+<h1>Realtor firms</h1>
+
+<QuickGrid Class="table" Items="RealtorFirms">
+    @* <PropertyColumn Property="rf => rf.Id" Title="Id" /> *@
+    <PropertyColumn Property="rf => rf.Name" Title="Name" />
+    <PropertyColumn Property="rf => rf.RealtorFirmPresentation" Title="About this firm" />
+    <PropertyColumn Property="rf => rf.Id" Title="Logotype" />
+</QuickGrid>
+
+
+
+@code {
+
+    // TODO: (Samed) Lägg till provisoriska länkar till resten av CRUD:en härifrån, för varje sida jag gjort klart
+
+    IQueryable<RealtorFirm> RealtorFirms;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(500);
+
+        // TODO: (Samed) Unable to call/use DTO:s here, why?
+        List<RealtorFirm> realtorFirmsFromAPI = await httpClient.GetFromJsonAsync<List<RealtorFirm>>("https://localhost:7190/api/RealtorFirm");
+
+
+        // TODO: (Samed) Behövs null-handling här också? Kollas ju i API?
+        RealtorFirms = realtorFirmsFromAPI.AsQueryable();
+    }
+}

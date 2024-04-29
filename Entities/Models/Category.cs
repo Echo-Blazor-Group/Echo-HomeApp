@@ -1,4 +1,4 @@
-﻿namespace Entities
+﻿namespace Models
 {
     public class Category
     {
