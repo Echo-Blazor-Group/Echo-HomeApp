@@ -69,12 +69,18 @@ else
 @code {
 
     List<EstateDto> estates = new List<EstateDto>();
+    List<Category> categories = new List<Category>();
+    List<County> counties = new List<County>();
     protected override async Task OnInitializedAsync()
     {
         await Task.Delay(500);
 
         var result = await http.GetFromJsonAsync<List<EstateDto>>("https://localhost:7190/api/Estate");
+        var category = await http.GetFromJsonAsync<List<Category>>("https://localhost:7190/api/Category");
+        var county = await http.GetFromJsonAsync<List<County>>("https://localhost:7190/api/County");
         if (result is not null) estates = result;
+        if (category is not null) categories = category;
+        if (county is not null) counties = county;
     }
 
     void EstateAdd()

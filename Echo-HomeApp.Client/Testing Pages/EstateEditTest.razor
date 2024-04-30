@@ -63,10 +63,26 @@ else
     </div>
     <div>
         <lable onformchange="County"> County </lable>
+        <select name="County" id="CountyId">
+            @foreach (var county in counties)
+            {
+              <option>
+                 @county.CountyName
+              </option>
+            }
+        </select>
         <InputNumber id="County" @bind-Value="_Estate.CountyId" class="form-control" />
     </div>
     <div>
         <lable onformchange="Category"> Category </lable>
+        <select name="Category" id="CategoryId">
+            @foreach (var category in categories)
+            {
+                <option>
+                    @category.EstateCategory
+                </option>
+            }
+        </select>
         <InputNumber id="Category" @bind-Value="_Estate.CategoryId" class="form-control" />
 
     </div>
@@ -77,15 +93,17 @@ else
     public int? Id { get; set; }
 
     public UpdateEstateDto _Estate { get; set; } = new UpdateEstateDto();
-
+    List<Category> categories = new List<Category>();
+    List<County> counties = new List<County>();
     protected override async Task OnParametersSetAsync()
     {
         var result = await Http.GetFromJsonAsync<UpdateEstateDto>($"https://localhost:7190/api/Estate/{Id}");
+        if (result is not null) { _Estate = result; }
 
-        if (result is not null)
-        {
-            _Estate = result;
-        }
+        var category = await Http.GetFromJsonAsync<List<Category>>("https://localhost:7190/api/Category");
+        var county = await Http.GetFromJsonAsync<List<County>>("https://localhost:7190/api/County");
+        if (category is not null) categories = category;
+        if (county is not null) counties = county;
     }
 
     async Task HandleSubmit()
@@ -94,23 +112,20 @@ else
         if (Id is not null)
         {
             var result = await Http.PutAsJsonAsync($"https://localhost:7190/api/Estate/{Id}", _Estate);
-            // _Estate = await result.Content.ReadFromJsonAsync<UpdateEstateDto>();
+             _Estate = await result.Content.ReadFromJsonAsync<UpdateEstateDto>();
         }
-        // else
-        // {
-        //     var result = await Http.PostAsJsonAsync($"https://localhost:7190/api/Estate/", _Estate);
-        //     _Estate = await result.Content.ReadFromJsonAsync<UpdateEstateDto>();
-        // }
+        else
+        {
+            var result = await Http.PostAsJsonAsync($"https://localhost:7190/api/Estate/", _Estate);
+            _Estate = await result.Content.ReadFromJsonAsync<UpdateEstateDto>();
+        }
         NavigationManager.NavigateTo("Estates");
     }
     public class Todo
     {
-       
+
     }
 }
-
-
-
 
     @*         <select name="County" id="CountyId">
 
@@ -121,7 +136,7 @@ else
                 </option>
                 }
         </select>
-        
+
             <div>
         <lable onformchange="County"> County </lable>
         <InputText id="County.CountyName" @bind-Value="_Estate.County.CountyName" class="form-control" />
