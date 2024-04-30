@@ -1,5 +1,4 @@
-﻿using Entities;
-
+﻿
 namespace DTOs
 {
     public class UpdateEstateDto
@@ -28,7 +27,7 @@ namespace DTOs
         public DateOnly? PublishDate { get; set; } = new DateOnly();
         //Relational
         public int CountyId { get; set; }
-        public int RealtorId { get; set; }
+        //public Guid RealtorId { get; set; }
         public int CategoryId { get; set; }
 
 

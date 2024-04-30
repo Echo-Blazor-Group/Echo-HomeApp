@@ -80,7 +80,7 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
-        var result = await Http.GetFromJsonAsync<UpdateEstateDto>($"https://localhost:7190/api/Estate/{(int)Id}");
+        var result = await Http.GetFromJsonAsync<UpdateEstateDto>($"https://localhost:7190/api/Estate/{Id}");
 
         if (result is not null)
         {
@@ -94,7 +94,7 @@ else
         if (Id is not null)
         {
             var result = await Http.PutAsJsonAsync($"https://localhost:7190/api/Estate/{Id}", _Estate);
-            _Estate = await result.Content.ReadFromJsonAsync<UpdateEstateDto>();
+            // _Estate = await result.Content.ReadFromJsonAsync<UpdateEstateDto>();
         }
         // else
         // {
@@ -102,6 +102,10 @@ else
         //     _Estate = await result.Content.ReadFromJsonAsync<UpdateEstateDto>();
         // }
         NavigationManager.NavigateTo("Estates");
+    }
+    public class Todo
+    {
+       
     }
 }
 

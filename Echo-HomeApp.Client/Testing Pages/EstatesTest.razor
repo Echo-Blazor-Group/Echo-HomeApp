@@ -1,5 +1,6 @@
 ﻿@page "/Estates"
 @using DTOs
+@using Models
 @inject HttpClient http
 @inject NavigationManager NavigationManager
 @rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
@@ -56,7 +57,7 @@ else
             <td>@estate.County.CountyName</td>
             <td>@estate.Category.EstateCategory</td>
             <td>@estate.Realtor.FirstName @estate.Realtor.LastName</td>
-                    <td><button class="btn btn-primary" @onclick="@(() => EstateEdit(@estate.Id))">Edit</button></td>
+            <td><button class="btn btn-primary" @onclick="@(() => EstateEdit(@estate.Id))">Edit</button></td>
            
         </tr>
     }
