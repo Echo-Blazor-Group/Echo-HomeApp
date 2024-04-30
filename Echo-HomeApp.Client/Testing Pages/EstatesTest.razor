@@ -54,9 +54,9 @@ else
             <td>@estate.ConstructionDate</td>
             <td>@estate.EstateDescription</td>
             <td>@estate.PublishDate</td>
-            <td>@estate.County.CountyName</td>
-            <td>@estate.Category.EstateCategory</td>
-            <td>@estate.Realtor.FirstName @estate.Realtor.LastName</td>
+            <td>@estate?.County?.CountyName</td>
+            <td>@estate?.Category?.EstateCategory</td>
+            <td>@estate?.Realtor?.FirstName @estate?.Realtor?.LastName</td>
             <td><button class="btn btn-primary" @onclick="@(() => EstateEdit(@estate.Id))">Edit</button></td>
            
         </tr>
