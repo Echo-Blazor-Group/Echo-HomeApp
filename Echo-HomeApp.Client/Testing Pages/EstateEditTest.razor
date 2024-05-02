@@ -63,27 +63,43 @@ else
     </div>
     <div>
         <lable onformchange="County"> County </lable>
-        <select name="County" id="CountyId">
+        <InputSelect id="County" @bind-Value="_Estate.CountyId" class="form-control" >
+            
             @foreach (var county in counties)
             {
-              <option>
-                 @county.CountyName
-              </option>
+                <label>@county.CountyName </label>
+                <option>
+                    @county.Id
+                </option>
             }
-        </select>
-        <InputNumber id="County" @bind-Value="_Estate.CountyId" class="form-control" />
+            </InputSelect>
     </div>
     <div>
         <lable onformchange="Category"> Category </lable>
-        <select name="Category" id="CategoryId">
+
+        <InputSelect id="Category" @bind-Value="_Estate.CategoryId" class="form-control" >
             @foreach (var category in categories)
             {
+                <label>@category.EstateCategory </label>
                 <option>
-                    @category.EstateCategory
+                    @category.Id
                 </option>
             }
-        </select>
-        <InputNumber id="Category" @bind-Value="_Estate.CategoryId" class="form-control" />
+            </InputSelect>
+
+    </div>
+    <div>
+        <lable onformchange="Category"> Category </lable>
+        <InputSelect id="Realtor" @bind-Value="_Estate.RealtorId" class="form-control">
+            @foreach (var realtor in realtors)
+            {
+                <label>@realtor.FirstName @realtor.LastName </label>
+                <option>
+                    @_Estate.RealtorId
+                    @realtor
+                </option>
+            }
+        </InputSelect>
 
     </div>
     <button type="submit" class="btn btn-primary">Save</button>
@@ -95,6 +111,7 @@ else
     public UpdateEstateDto _Estate { get; set; } = new UpdateEstateDto();
     List<Category> categories = new List<Category>();
     List<County> counties = new List<County>();
+    List<Realtor> realtors = new List<Realtor>();
     protected override async Task OnParametersSetAsync()
     {
         var result = await Http.GetFromJsonAsync<UpdateEstateDto>($"https://localhost:7190/api/Estate/{Id}");
@@ -102,8 +119,10 @@ else
 
         var category = await Http.GetFromJsonAsync<List<Category>>("https://localhost:7190/api/Category");
         var county = await Http.GetFromJsonAsync<List<County>>("https://localhost:7190/api/County");
+        var realtor = await Http.GetFromJsonAsync<List<Realtor>>("https://localhost:7190/api/Realtor");
         if (category is not null) categories = category;
         if (county is not null) counties = county;
+        if (realtor is not null) realtors = realtor;
     }
 
     async Task HandleSubmit()
@@ -112,13 +131,13 @@ else
         if (Id is not null)
         {
             var result = await Http.PutAsJsonAsync($"https://localhost:7190/api/Estate/{Id}", _Estate);
-             _Estate = await result.Content.ReadFromJsonAsync<UpdateEstateDto>();
+             // _Estate = await result.Content.ReadFromJsonAsync<UpdateEstateDto>();
         }
-        else
-        {
-            var result = await Http.PostAsJsonAsync($"https://localhost:7190/api/Estate/", _Estate);
-            _Estate = await result.Content.ReadFromJsonAsync<UpdateEstateDto>();
-        }
+        // else
+        // {
+        //     var result = await Http.PostAsJsonAsync($"https://localhost:7190/api/Estate/", _Estate);
+        //     _Estate = await result.Content.ReadFromJsonAsync<UpdateEstateDto>();
+        // }
         NavigationManager.NavigateTo("Estates");
     }
     public class Todo
