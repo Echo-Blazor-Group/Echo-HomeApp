@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <Folder Include="Components\Components\" />
+    <Folder Include="Components\Pages\Estate\" />
   </ItemGroup>
 
 </Project>

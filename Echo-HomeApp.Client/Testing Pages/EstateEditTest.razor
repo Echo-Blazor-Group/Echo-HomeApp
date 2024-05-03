@@ -59,15 +59,45 @@ else
     </div>
     <div>
         <lable onformchange="PublishDate"> PublishDate </lable>
-        <InputDate id="EstateDescription" @bind-Value="_Estate.PublishDate" class="form-control" />
+        <InputDate id="PublishDate" @bind-Value="_Estate.PublishDate" class="form-control" />
     </div>
     <div>
         <lable onformchange="County"> County </lable>
-        <InputNumber id="County" @bind-Value="_Estate.CountyId" class="form-control" />
+        <InputSelect id="County" @bind-Value="_Estate.CountyId" class="form-control" >
+            
+            @foreach (var county in counties)
+            {
+
+                <option label="@county.CountyName ">
+                    @county.Id
+                </option>
+            }
+            </InputSelect>
     </div>
     <div>
         <lable onformchange="Category"> Category </lable>
-        <InputNumber id="Category" @bind-Value="_Estate.CategoryId" class="form-control" />
+
+        <InputSelect id="Category" @bind-Value="_Estate.CategoryId" class="form-control" >
+            @foreach (var category in categories)
+            {
+
+                <option label="@category.EstateCategory">
+                    @category.Id
+                </option>
+            }
+            </InputSelect>
+
+    </div>
+    <div>
+        <lable onformchange="Realtor"> Realtor </lable>
+        <InputSelect id="RealtorId" @bind-Value="_Estate.RealtorId" class="form-control">
+            @foreach (var realtors in realtors)
+            {
+                <option label="@realtors.FirstName @realtors.LastName">
+                    @realtors.Id
+                </option>
+            }
+        </InputSelect>
 
     </div>
     <button type="submit" class="btn btn-primary">Save</button>
@@ -75,17 +105,22 @@ else
 @code {
     [Parameter]
     public int? Id { get; set; }
-
+    [SupplyParameterFromForm]
     public UpdateEstateDto _Estate { get; set; } = new UpdateEstateDto();
-
+    List<Category> categories = new List<Category>();
+    List<County> counties = new List<County>();
+    List<Realtor> realtors = new List<Realtor>();
     protected override async Task OnParametersSetAsync()
     {
-        var result = await Http.GetFromJsonAsync<UpdateEstateDto>($"https://localhost:7190/api/Estate/{(int)Id}");
+        var result = await Http.GetFromJsonAsync<UpdateEstateDto>($"https://localhost:7190/api/Estate/{Id}");
+        if (result is not null) { _Estate = result; }
 
-        if (result is not null)
-        {
-            _Estate = result;
-        }
+        var category = await Http.GetFromJsonAsync<List<Category>>("https://localhost:7190/api/Category");
+        var county = await Http.GetFromJsonAsync<List<County>>("https://localhost:7190/api/County");
+        var realtor = await Http.GetFromJsonAsync<List<Realtor>>("https://localhost:7190/api/Realtor");
+        if (category is not null) categories = category;
+        if (county is not null) counties = county;
+        if (realtor is not null) realtors = realtor;
     }
 
     async Task HandleSubmit()
@@ -94,7 +129,7 @@ else
         if (Id is not null)
         {
             var result = await Http.PutAsJsonAsync($"https://localhost:7190/api/Estate/{Id}", _Estate);
-            _Estate = await result.Content.ReadFromJsonAsync<UpdateEstateDto>();
+             // _Estate = await result.Content.ReadFromJsonAsync<UpdateEstateDto>();
         }
         // else
         // {
@@ -104,27 +139,3 @@ else
         NavigationManager.NavigateTo("Estates");
     }
 }
-
-
-
-
-    @*         <select name="County" id="CountyId">
-
-                @foreach (var estate in Estate.County.CountyName)
-               {
-                <option>
-                    @estate
-                </option>
-                }
-        </select>
-        
-            <div>
-        <lable onformchange="County"> County </lable>
-        <InputText id="County.CountyName" @bind-Value="_Estate.County.CountyName" class="form-control" />
-    </div>
-    <div>
-        <lable onformchange="Category"> Category </lable>
-        <InputText id="Category.EstateCategory" @bind-Value="_Estate.Category.EstateCategory" class="form-control" />
-
-    </div>
-        *@
