@@ -10,6 +10,7 @@ namespace Models
         {
 
         }
+        public string Id { get; set; }
 
         [Required]
         [DisplayName("First Name")]

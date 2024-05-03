@@ -59,7 +59,7 @@ else
     </div>
     <div>
         <lable onformchange="PublishDate"> PublishDate </lable>
-        <InputDate id="EstateDescription" @bind-Value="_Estate.PublishDate" class="form-control" />
+        <InputDate id="PublishDate" @bind-Value="_Estate.PublishDate" class="form-control" />
     </div>
     <div>
         <lable onformchange="County"> County </lable>
@@ -67,8 +67,8 @@ else
             
             @foreach (var county in counties)
             {
-                <label>@county.CountyName </label>
-                <option>
+
+                <option label="@county.CountyName ">
                     @county.Id
                 </option>
             }
@@ -80,8 +80,8 @@ else
         <InputSelect id="Category" @bind-Value="_Estate.CategoryId" class="form-control" >
             @foreach (var category in categories)
             {
-                <label>@category.EstateCategory </label>
-                <option>
+
+                <option label="@category.EstateCategory">
                     @category.Id
                 </option>
             }
@@ -89,14 +89,12 @@ else
 
     </div>
     <div>
-        <lable onformchange="Category"> Category </lable>
-        <InputSelect id="Realtor" @bind-Value="_Estate.RealtorId" class="form-control">
-            @foreach (var realtor in realtors)
+        <lable onformchange="Realtor"> Realtor </lable>
+        <InputSelect id="RealtorId" @bind-Value="_Estate.RealtorId" class="form-control">
+            @foreach (var realtors in realtors)
             {
-                <label>@realtor.FirstName @realtor.LastName </label>
-                <option>
-                    @_Estate.RealtorId
-                    @realtor
+                <option label="@realtors.FirstName @realtors.LastName">
+                    @realtors.Id
                 </option>
             }
         </InputSelect>
@@ -107,7 +105,7 @@ else
 @code {
     [Parameter]
     public int? Id { get; set; }
-
+    [SupplyParameterFromForm]
     public UpdateEstateDto _Estate { get; set; } = new UpdateEstateDto();
     List<Category> categories = new List<Category>();
     List<County> counties = new List<County>();
@@ -140,29 +138,4 @@ else
         // }
         NavigationManager.NavigateTo("Estates");
     }
-    public class Todo
-    {
-
-    }
 }
-
-    @*         <select name="County" id="CountyId">
-
-                @foreach (var estate in Estate.County.CountyName)
-               {
-                <option>
-                    @estate
-                </option>
-                }
-        </select>
-
-            <div>
-        <lable onformchange="County"> County </lable>
-        <InputText id="County.CountyName" @bind-Value="_Estate.County.CountyName" class="form-control" />
-    </div>
-    <div>
-        <lable onformchange="Category"> Category </lable>
-        <InputText id="Category.EstateCategory" @bind-Value="_Estate.Category.EstateCategory" class="form-control" />
-
-    </div>
-        *@

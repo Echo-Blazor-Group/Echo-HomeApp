@@ -3,7 +3,7 @@ namespace DTOs
 {
     public class UpdateEstateDto
     {
-
+        public int Id { get; set; } 
         public string Address { get; set; } = string.Empty;
 
         public int StartingPrice { get; set; }
@@ -26,10 +26,9 @@ namespace DTOs
 
         public DateOnly? PublishDate { get; set; } = new DateOnly();
         //Relational
-        public int CountyId { get; set; }
-        
+        public int CountyId { get; set; }      
         public int CategoryId { get; set; }
-        public string RealtorId { get; set; }
+        public string? RealtorId { get; set; }
 
     }
 }
