@@ -1,4 +1,4 @@
-﻿using Entities;
+﻿using Models;
 
 namespace DTOs
 {

@@ -1,39 +1,66 @@
-﻿@page "/RealtorFirms"
-@using Microsoft.AspNetCore.Components.QuickGrid
-@using DTOs
-@using Models
+﻿@page "/realtorfirms"
 @inject HttpClient httpClient
+@inject NavigationManager NavigationManager
 @rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
 
+@{
+    /// <summary>
+    /// Author: Samed Salman
+    /// This page lists all Realtor firms
+    /// </summary>
+}
 
 <PageTitle>Realtor firms</PageTitle>
 
 <h1>Realtor firms</h1>
 
+@if (RealtorFirms is null)
+{
+    <p><em>Loading...</em></p>
+}
+
+<Button Color="ButtonColor.Primary"  @onclick="CreateNewAsync"><Icon Name="IconName.Clipboard" /> Add new</Button>
+
 <QuickGrid Class="table" Items="RealtorFirms">
-    @* <PropertyColumn Property="rf => rf.Id" Title="Id" /> *@
-    <PropertyColumn Property="rf => rf.Name" Title="Name" />
+    <PropertyColumn Property="rf => rf.Id" Title="Id" />
+    <PropertyColumn Property="rf => rf.Name" Title="Name" Sortable="true" />
     <PropertyColumn Property="rf => rf.RealtorFirmPresentation" Title="About this firm" />
-    <PropertyColumn Property="rf => rf.Id" Title="Logotype" />
+    <TemplateColumn Context="realtorFirm" Title="Logotype">
+        <img src="@realtorFirm.Logotype" alt="Logotype for @realtorFirm.Name" width="100px" />
+    </TemplateColumn>
+    <TemplateColumn Context="realtorFirm" Title="Handle">
+        <Button Color="ButtonColor.Primary" @onclick="() => GoToDetailsAsync(realtorFirm.Id)"><Icon Name="IconName.FileText" /> Details</Button>
+    </TemplateColumn>
 </QuickGrid>
 
 
 
 @code {
+    // TODO: (Samed) Position add-button to the right, in line with the other buttons
+    // TODO: (Samed) Add pagination for every ten firms on this page
 
-    // TODO: (Samed) Lägg till provisoriska länkar till resten av CRUD:en härifrån, för varje sida jag gjort klart
-
-    IQueryable<RealtorFirm> RealtorFirms;
+    IQueryable<RealtorFirmGetDTO> RealtorFirms;
 
     protected override async Task OnInitializedAsync()
     {
         await Task.Delay(500);
 
-        // TODO: (Samed) Unable to call/use DTO:s here, why?
-        List<RealtorFirm> realtorFirmsFromAPI = await httpClient.GetFromJsonAsync<List<RealtorFirm>>("https://localhost:7190/api/RealtorFirm");
+        List<RealtorFirmGetDTO> realtorFirmsFromAPI = await httpClient.GetFromJsonAsync<List<RealtorFirmGetDTO>>("https://localhost:7190/api/RealtorFirm");
 
-
-        // TODO: (Samed) Behövs null-handling här också? Kollas ju i API?
+        if (realtorFirmsFromAPI == null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
         RealtorFirms = realtorFirmsFromAPI.AsQueryable();
+    }
+
+    private async Task GoToDetailsAsync(int id)
+    {
+        NavigationManager.NavigateTo($"/realtorfirm/details?id={id}");
+    }
+
+    private async Task CreateNewAsync(MouseEventArgs e)
+    {
+        NavigationManager.NavigateTo("/realtorfirm/create");
     }
 }

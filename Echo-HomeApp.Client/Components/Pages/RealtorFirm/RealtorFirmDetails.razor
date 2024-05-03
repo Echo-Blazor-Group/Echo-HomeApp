@@ -1,0 +1,89 @@
+﻿@page "/realtorfirm/details/"
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using DTOs
+@using Models
+@inject HttpClient httpClient
+@inject NavigationManager NavigationManager
+@inject ToastService ToastService
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+@{
+    /// <summary>
+    /// Author: Samed Salman
+    /// This page shows a single Realtor firm's details and allows user to update or delete.
+    /// </summary>
+}
+
+<div>
+    @if (RealtorFirmDTO is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">Name</dt>
+            <dt class="col-sm-10">@RealtorFirmDTO.Name</dt>
+            <dt class="col-sm-2">About</dt>
+            <dd class="col-sm-10">@RealtorFirmDTO.RealtorFirmPresentation</dd>
+            <dt class="col-sm-2">Logotype url</dt>
+            <dd class="col-sm-10">@RealtorFirmDTO.Logotype</dd>
+            <dt class="col-sm-2">Logotype image</dt>
+            <dd class="col-sm-10"><img src="@RealtorFirmDTO.Logotype" alt="Logotype for @RealtorFirmDTO.Name" class="img-fluid" /></dd>
+        </dl>
+    }
+</div>
+<div>
+    <Button Color="ButtonColor.Success" @onclick="() => EditAsync(RealtorFirmDTO.Id)"><Icon Name="IconName.PencilSquare" /></Button>
+    <Button Color="ButtonColor.Danger" @onclick="() => DeleteAsync(RealtorFirmDTO.Id)"><Icon Name="IconName.Trash" /></Button>
+</div>
+
+@code {
+
+    // TODO: (Samed) Lägg till "tillbaka till lista" eller liknande som klickbart alternativ i HTML:en.
+    public RealtorFirmGetDTO RealtorFirmDTO { get; set; }
+
+    [SupplyParameterFromQuery]
+    public int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(500);
+        RealtorFirmDTO = await httpClient.GetFromJsonAsync<RealtorFirmGetDTO>($@"https://localhost:7190/api/RealtorFirm/{Id}");
+
+        if (RealtorFirmDTO is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    private async Task EditAsync(int id)
+    {
+        // Make it Edit on this same page, instead of rerouting
+        NavigationManager.NavigateTo($@"/realtorfirm/edit?id={id}");
+    }
+
+    // TODO: (Samed) Make this work. Stops at deleting but shows error in browser, instead of redirecting or throwing exception 
+    private async Task DeleteAsync(int id)
+    {
+        try
+        {
+            await httpClient.DeleteFromJsonAsync<RealtorFirmGetDTO>($@"https://localhost:7190/api/RealtorFirm/{id}");
+
+            // TODO: (Samed) add delete confirmation here? "Are you sure..."-popup
+
+            NavigationManager.NavigateTo("/realtorfirms");
+        }
+        catch(HttpRequestException ex) when (ex is {StatusCode: HttpStatusCode.NotFound})
+        {
+            string error = $"Page doesn't exist.";
+        }
+        catch (HttpRequestException ex) when (ex is { StatusCode: HttpStatusCode.BadRequest })
+        {
+            string error = $"Realtor firm doesn't exist.";
+        }
+
+        // ToastService.Notify(new(ToastType.Danger, "Realtor firm deleted successfully"));
+    }
+
+    // TODO: (Samed) Add DeActivate()-method and button in this page
+}
