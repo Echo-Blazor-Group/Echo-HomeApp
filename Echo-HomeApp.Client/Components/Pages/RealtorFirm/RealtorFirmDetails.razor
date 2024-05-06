@@ -36,13 +36,15 @@
     }
 </div>
 <div>
+    <Button Type="ButtonType.Link" To="/realtorfirms" Color="ButtonColor.Secondary"><Icon Name="IconName.ArrowReturnLeft" /> Cancel</Button>
     <Button Color="ButtonColor.Success" @onclick="() => EditAsync(RealtorFirmDTO.Id)"><Icon Name="IconName.PencilSquare" /> Edit</Button>
     <Button Color="ButtonColor.Danger" @onclick="() => DeleteAsync(RealtorFirmDTO.Id)"><Icon Name="IconName.Trash" /> Delete</Button>
 </div>
 
 @code {
 
-    // TODO: (Samed) Lägg till "tillbaka till lista" eller liknande som klickbart alternativ i HTML:en.
+    // TODO: (Samed) Add DeActivate()-method and button to this page
+
     public RealtorFirmGetDTO RealtorFirmDTO { get; set; }
 
     [SupplyParameterFromQuery]
@@ -74,13 +76,8 @@
         if(response.IsSuccessStatusCode)
         {
             NavigationManager.NavigateTo("/realtorfirms");
+            // TODO: Send toast message to next page
         }
-
-        // try
-        // {
-        //     await httpClient.DeleteFromJsonAsync<RealtorFirmGetDTO>($@"https://localhost:7190/api/RealtorFirm/{id}");
-
-        //     // TODO: (Samed) add delete confirmation here? "Are you sure..."-popup
 
         //     NavigationManager.NavigateTo("/realtorfirms");
         // }
@@ -92,9 +89,5 @@
         // {
         //     string error = $"Realtor firm doesn't exist.";
         // }
-
-        // ToastService.Notify(new(ToastType.Danger, "Realtor firm deleted successfully"));
     }
-
-    // TODO: (Samed) Add DeActivate()-method and button to this page
 }

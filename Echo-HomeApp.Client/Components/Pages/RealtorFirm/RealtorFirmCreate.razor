@@ -16,9 +16,32 @@
 
 <div class="row">
     <div class="col-md-4">
-    <EditForm method="post" Model="@RealtorFirm" OnValidSubmit="AddRealtorFirmAsync" FormName="create" >
+    <EditForm method="post" Model="RealtorFirm" OnValidSubmit="AddRealtorFirmAsync" FormName="create" >
         <DataAnnotationsValidator />
-            <RealtorFirmEditForm /> @* The form itself is in a separate component *@
+        @* <RealtorFirmEditForm /> TODO: (Samed) Try to make the component work with EventCallBack *@
+        <div class="mb-3">
+            <label for="name" class="form-label">Name: </label>
+            <InputText id="name" @bind-Value="RealtorFirm.Name" class="form-control" />
+            <ValidationMessage For="() => RealtorFirm.Name" class="text-danger" />
+        </div>
+        <div class="mb-3">
+            <label for="presentation" class="form-label">About this firm: </label>
+            <InputTextArea id="presentation" @bind-Value="RealtorFirm.RealtorFirmPresentation" class="form-control" />
+            <ValidationMessage For="() => RealtorFirm.RealtorFirmPresentation" class="text-danger" />
+        </div>
+        <div class="mb-3">
+            <label for="Logotype" class="form-label">Logotype URL: </label>
+            <InputTextArea id="Logotype" @bind-Value="RealtorFirm.Logotype" class="form-control" />
+            <ValidationMessage For="() => RealtorFirm.Logotype" class="text-danger" />
+        </div>
+        <div class="mb-3">
+            @* TODO: Use @onchange to give RealtorFirm.Logotype value more dynamically?
+            Make the logotype display here after URL is input *@
+            @if (RealtorFirm.Logotype != null)
+            {
+                <img src="@RealtorFirm.Logotype" alt="Logotype for @RealtorFirm.Name" width="200px" />
+            }
+        </div>
         <div class="mb-3">
             <Button Type="ButtonType.Link" To="/realtorfirms" Color="ButtonColor.Secondary"><Icon Name="IconName.ArrowReturnLeft" /> Cancel</Button>
             <Button Type="ButtonType.Submit" Color="ButtonColor.Primary"><Icon Name="IconName.ClipboardPlus" /> Add</Button>
@@ -29,32 +52,29 @@
 
 
 @code {
-
-    // TODO: (Samed) bryta ut RealtorFirmEditForm till egen component, som kan återanvändas på Editsidan.
-
     [SupplyParameterFromForm]
     public RealtorFirmPostDTO RealtorFirm { get; set; } = new();
 
+    // Http-post call on form submit
     private async Task AddRealtorFirmAsync()
     {
-        // Http-post call on form submit
-        await httpClient.PostAsJsonAsync("https://localhost:7190/api/RealtorFirm", RealtorFirm);
+        // Send post request and catch response message
+        HttpResponseMessage response = await httpClient.PostAsJsonAsync("https://localhost:7190/api/RealtorFirm", RealtorFirm);
 
-        // if(response.IsSuccessStatusCode)
-        // {
+        if(response.IsSuccessStatusCode)
+        {
             // TODO: (Samed) Get Location in Http-response and extract id
+            // Testat:
+            // - lägga till inställning (AllowAutoRedirect = false) i program.cs - gav inget
+            // - kollat Postman, där Location kommer med
 
             // TODO: (Samed) Redirect to to details page
 
             // In the meantime, navigate to list of realtor firms
             NavigationManager.NavigateTo("/realtorfirms");
-        // }
-        //else: show fail toastmessage
+        }
+        // TODO: else: show fail toastmessage
 
         // TODO: (Samed) Show success Toast-message on next page
     }
-
-    // Testat:
-    // - lägga till inställning (AllowAutoRedirect = false) i program.cs - gav inget
-    // - kollat Postman, där Location kommer med
 }
