@@ -6,13 +6,16 @@
 @inject NavigationManager NavigationManager
 @inject ToastService ToastService
 @rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
-
 @{
     /// <summary>
     /// Author: Samed Salman
     /// This page shows a single Realtor firm's details and allows user to update or delete.
     /// </summary>
 }
+
+<PageTitle>Edit realtor firm</PageTitle>
+
+<h1>Edit realtor firm</h1>
 
 <div>
     @if (RealtorFirmDTO is null)
@@ -33,8 +36,8 @@
     }
 </div>
 <div>
-    <Button Color="ButtonColor.Success" @onclick="() => EditAsync(RealtorFirmDTO.Id)"><Icon Name="IconName.PencilSquare" /></Button>
-    <Button Color="ButtonColor.Danger" @onclick="() => DeleteAsync(RealtorFirmDTO.Id)"><Icon Name="IconName.Trash" /></Button>
+    <Button Color="ButtonColor.Success" @onclick="() => EditAsync(RealtorFirmDTO.Id)"><Icon Name="IconName.PencilSquare" /> Edit</Button>
+    <Button Color="ButtonColor.Danger" @onclick="() => DeleteAsync(RealtorFirmDTO.Id)"><Icon Name="IconName.Trash" /> Delete</Button>
 </div>
 
 @code {
@@ -59,31 +62,39 @@
     private async Task EditAsync(int id)
     {
         // Make it Edit on this same page, instead of rerouting
-        NavigationManager.NavigateTo($@"/realtorfirm/edit?id={id}");
+        // NavigationManager.NavigateTo($@"/realtorfirm/edit?id={id}");
     }
 
-    // TODO: (Samed) Make this work. Stops at deleting but shows error in browser, instead of redirecting or throwing exception 
     private async Task DeleteAsync(int id)
     {
-        try
+        // TODO: (Samed) add delete confirmation here? "Are you sure..."-popup
+
+        HttpResponseMessage response = await httpClient.DeleteAsync($@"https://localhost:7190/api/RealtorFirm/{id}");
+
+        if(response.IsSuccessStatusCode)
         {
-            await httpClient.DeleteFromJsonAsync<RealtorFirmGetDTO>($@"https://localhost:7190/api/RealtorFirm/{id}");
-
-            // TODO: (Samed) add delete confirmation here? "Are you sure..."-popup
-
             NavigationManager.NavigateTo("/realtorfirms");
         }
-        catch(HttpRequestException ex) when (ex is {StatusCode: HttpStatusCode.NotFound})
-        {
-            string error = $"Page doesn't exist.";
-        }
-        catch (HttpRequestException ex) when (ex is { StatusCode: HttpStatusCode.BadRequest })
-        {
-            string error = $"Realtor firm doesn't exist.";
-        }
+
+        // try
+        // {
+        //     await httpClient.DeleteFromJsonAsync<RealtorFirmGetDTO>($@"https://localhost:7190/api/RealtorFirm/{id}");
+
+        //     // TODO: (Samed) add delete confirmation here? "Are you sure..."-popup
+
+        //     NavigationManager.NavigateTo("/realtorfirms");
+        // }
+        // catch(HttpRequestException ex) when (ex is {StatusCode: HttpStatusCode.NotFound})
+        // {
+        //     string error = $"Page doesn't exist.";
+        // }
+        // catch (HttpRequestException ex) when (ex is { StatusCode: HttpStatusCode.BadRequest })
+        // {
+        //     string error = $"Realtor firm doesn't exist.";
+        // }
 
         // ToastService.Notify(new(ToastType.Danger, "Realtor firm deleted successfully"));
     }
 
-    // TODO: (Samed) Add DeActivate()-method and button in this page
+    // TODO: (Samed) Add DeActivate()-method and button to this page
 }

@@ -1,9 +1,16 @@
 ﻿@page "/realtorfirm/create"
+@using Echo_HomeApp.Client.Components.Components
 @inject HttpClient httpClient
 @inject NavigationManager NavigationManager
 @rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+@{
+    /// <summary>
+    /// Author: Samed Salman
+    /// This page is for creating a new realtor firm.
+    /// </summary>
+}
 
-<PageTitle>Add new firm</PageTitle>
+<PageTitle>Add new realtor firm</PageTitle>
 
 <h1>Add new realtor firm</h1>
 
@@ -11,54 +18,43 @@
     <div class="col-md-4">
     <EditForm method="post" Model="@RealtorFirm" OnValidSubmit="AddRealtorFirmAsync" FormName="create" >
         <DataAnnotationsValidator />
-        <div class="mb-3">
-            <label for="name" class="form-label">Name: </label>
-            <InputText id="name" @bind-Value="RealtorFirm.Name" class="form-control" />
-            <ValidationMessage For="() => RealtorFirm.Name" class="text-danger" />
-        </div>
-        <div class="mb-3">
-            <label for="presentation" class="form-label">About this firm: </label>
-            <InputTextArea id="presentation" @bind-Value="RealtorFirm.RealtorFirmPresentation" class="form-control" />
-            <ValidationMessage For="() => RealtorFirm.RealtorFirmPresentation" class="text-danger" />
-        </div>
-        <div class="mb-3">
-            <label for="Logotype" class="form-label">Logotype URL: </label>
-            <InputTextArea id="Logotype" @bind-Value="RealtorFirm.Logotype" class="form-control" />
-            <ValidationMessage For="() => RealtorFirm.Logotype" class="text-danger" />
-        </div>
+            <RealtorFirmEditForm /> @* The form itself is in a separate component *@
         <div class="mb-3">
             <Button Type="ButtonType.Link" To="/realtorfirms" Color="ButtonColor.Secondary"><Icon Name="IconName.ArrowReturnLeft" /> Cancel</Button>
             <Button Type="ButtonType.Submit" Color="ButtonColor.Primary"><Icon Name="IconName.ClipboardPlus" /> Add</Button>
         </div>
     </EditForm>
     </div>
-    @* TODO: Make the logotype display here after URL is input *@
 </div>
 
 
 @code {
+
+    // TODO: (Samed) bryta ut RealtorFirmEditForm till egen component, som kan återanvändas på Editsidan.
+
     [SupplyParameterFromForm]
-    RealtorFirmPostDTO RealtorFirm { get; set; } = new();
+    public RealtorFirmPostDTO RealtorFirm { get; set; } = new();
 
     private async Task AddRealtorFirmAsync()
     {
         // Http-post call on form submit
-        HttpResponseMessage response = await httpClient.PostAsJsonAsync("https://localhost:7190/api/RealtorFirm", RealtorFirm);
+        await httpClient.PostAsJsonAsync("https://localhost:7190/api/RealtorFirm", RealtorFirm);
 
-        if(response.IsSuccessStatusCode)
-        {
+        // if(response.IsSuccessStatusCode)
+        // {
             // TODO: (Samed) Get Location in Http-response and extract id
-            //IEnumerable<string> headerValues = response.Headers.GetValues("Location");
 
             // TODO: (Samed) Redirect to to details page
-            Uri realtorFirmUri = response.Headers.Location;
-            // NavigationManager.NavigateTo("/realtorfirms");
-        }
 
-        // TODO: (Samed) Success Toast-message on next page
+            // In the meantime, navigate to list of realtor firms
+            NavigationManager.NavigateTo("/realtorfirms");
+        // }
+        //else: show fail toastmessage
+
+        // TODO: (Samed) Show success Toast-message on next page
     }
 
     // Testat:
-    // - lägga till inställning i program.cs - gav inget
+    // - lägga till inställning (AllowAutoRedirect = false) i program.cs - gav inget
     // - kollat Postman, där Location kommer med
 }
