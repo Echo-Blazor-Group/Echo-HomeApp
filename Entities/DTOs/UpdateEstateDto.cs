@@ -1,4 +1,5 @@
-﻿
+﻿using Models;
+
 namespace DTOs
 {
     public class UpdateEstateDto
