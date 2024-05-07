@@ -1,11 +1,10 @@
-﻿@page "/EstateEditTest"
+﻿@page "/EstateAddTest"
 @page "/EstateEditTest/{id:int}"
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 @rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
 @using DTOs
-
-<h3>EstateEditTest</h3>
+@using System.Linq;
 
 @if (Id == null)
 {
@@ -13,7 +12,7 @@
 }
 else
 {
-    <h3>Edit @_Estate.Address</h3>
+    <h3>Edit Estate</h3>
 }
 
 <EditForm Model="_Estate" OnSubmit="HandleSubmit">
@@ -63,11 +62,9 @@ else
     </div>
     <div>
         <lable onformchange="County"> County </lable>
-        <InputSelect id="County" @bind-Value="_Estate.CountyId" class="form-control" >
-            
+        <InputSelect id="_Estate.CountyId"  @bind-Value="_Estate.CountyId" class="form-control">
             @foreach (var county in counties)
             {
-
                 <option label="@county.CountyName ">
                     @county.Id
                 </option>
@@ -76,11 +73,10 @@ else
     </div>
     <div>
         <lable onformchange="Category"> Category </lable>
-
-        <InputSelect id="Category" @bind-Value="_Estate.CategoryId" class="form-control" >
+       
+        <InputSelect id="_Estate.CategoryId" @bind-Value="_Estate.CategoryId" class="form-control">
             @foreach (var category in categories)
             {
-
                 <option label="@category.EstateCategory">
                     @category.Id
                 </option>
@@ -89,8 +85,8 @@ else
 
     </div>
     <div>
-        <lable onformchange="Realtor"> Realtor </lable>
-        <InputSelect id="RealtorId" @bind-Value="_Estate.RealtorId" class="form-control">
+        <lable onformchange="Realtor"> Realtor  </lable>
+        <InputSelect onselect="@_Estate.RealtorId" @bind-Value="_Estate.RealtorId" class="form-control">
             @foreach (var realtors in realtors)
             {
                 <option label="@realtors.FirstName @realtors.LastName">
@@ -98,10 +94,10 @@ else
                 </option>
             }
         </InputSelect>
-
     </div>
     <button type="submit" class="btn btn-primary">Save</button>
 </EditForm>
+
 @code {
     [Parameter]
     public int? Id { get; set; }
@@ -110,14 +106,30 @@ else
     List<Category> categories = new List<Category>();
     List<County> counties = new List<County>();
     List<Realtor> realtors = new List<Realtor>();
+
+    public string? selectedRealtor;
+    public int? selectedCounty;
+    public int? selectedCategory;
     protected override async Task OnParametersSetAsync()
     {
-        var result = await Http.GetFromJsonAsync<UpdateEstateDto>($"https://localhost:7190/api/Estate/{Id}");
-        if (result is not null) { _Estate = result; }
+        if (Id is not null)
+        {
+            var result = await Http.GetFromJsonAsync<UpdateEstateDto>($"https://localhost:7190/api/Estate/{Id}");
+            if (result is not null) { _Estate = result; }
+        }
 
         var category = await Http.GetFromJsonAsync<List<Category>>("https://localhost:7190/api/Category");
         var county = await Http.GetFromJsonAsync<List<County>>("https://localhost:7190/api/County");
         var realtor = await Http.GetFromJsonAsync<List<Realtor>>("https://localhost:7190/api/Realtor");
+
+
+        // var currentRealtor = realtors.FirstOrDefault(r => r.Id == _Estate.RealtorId);
+        // var currentCategory = categories.FirstOrDefault(r => r.Id == _Estate.CategoryId);
+        // var currentCounty = counties.FirstOrDefault(r => r.Id == _Estate.CountyId);
+
+        // selectedCategory = _Estate.CategoryId;
+        // selectedCounty = _Estate.CountyId;
+        // selectedRealtor = _Estate.RealtorId;
         if (category is not null) categories = category;
         if (county is not null) counties = county;
         if (realtor is not null) realtors = realtor;
@@ -131,11 +143,11 @@ else
             var result = await Http.PutAsJsonAsync($"https://localhost:7190/api/Estate/{Id}", _Estate);
              // _Estate = await result.Content.ReadFromJsonAsync<UpdateEstateDto>();
         }
-        // else
-        // {
-        //     var result = await Http.PostAsJsonAsync($"https://localhost:7190/api/Estate/", _Estate);
-        //     _Estate = await result.Content.ReadFromJsonAsync<UpdateEstateDto>();
-        // }
+        else
+        {
+            var result = await Http.PostAsJsonAsync($"https://localhost:7190/api/Estate/", _Estate);
+            // _Estate = await result.Content.ReadFromJsonAsync<UpdateEstateDto>();
+        }
         NavigationManager.NavigateTo("Estates");
     }
 }
