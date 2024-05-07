@@ -17,62 +17,63 @@ else
 
 <EditForm Model="_Estate" OnSubmit="HandleSubmit">
     <div>
-        <lable onformchange="address"> Adress </lable>
+        <label onformchange="address"> Adress </label>
         <InputText id="Address" @bind-Value="_Estate.Address" class="form-control" />
     </div>
     <div>
-        <lable onformchange="StartingPrice"> StartingPrice </lable>
+        <label onformchange="StartingPrice"> StartingPrice </label>
         <InputNumber id="StartingPrice" @bind-Value="_Estate.StartingPrice" class="form-control" />
     </div>
     <div>
-        <lable onformchange="LivingAreaKvm"> LivingAreaKvm </lable>
+        <label onformchange="LivingAreaKvm"> LivingAreaKvm </label>
         <InputText id="LivingAreaKvm" @bind-Value="_Estate.LivingAreaKvm" class="form-control" />
     </div>
     <div>
-        <lable onformchange="NumberOfRooms"> NumberOfRooms </lable>
+        <label onformchange="NumberOfRooms"> NumberOfRooms </label>
         <InputText id="NumberOfRooms" @bind-Value="_Estate.NumberOfRooms" class="form-control" />
     </div>
     <div>
-        <lable onformchange="BiAreaKvm"> BiAreaKvm </lable>
+        <label onformchange="BiAreaKvm"> BiAreaKvm </label>
         <InputText id="BiAreaKvm" @bind-Value="_Estate.BiAreaKvm" class="form-control" />
     </div>
     <div>
-        <lable onformchange="EstateAreaKvm"> EstateAreaKvm </lable>
+        <label onformchange="EstateAreaKvm"> EstateAreaKvm </label>
         <InputText id="EstateAreaKvm" @bind-Value="_Estate.EstateAreaKvm" class="form-control" />
     </div>
     <div>
-        <lable onformchange="MonthlyFee"> MonthlyFee </lable>
+        <label onformchange="MonthlyFee"> MonthlyFee </label>
         <InputText id="MonthlyFee" @bind-Value="_Estate.MonthlyFee" class="form-control" />
     </div>
     <div>
-        <lable onformchange="RunningCosts"> RunningCosts </lable>
+        <label onformchange="RunningCosts"> RunningCosts </label>
         <InputText id="RunningCosts" @bind-Value="_Estate.RunningCosts" class="form-control" />
     </div>
     <div>
-        <lable onformchange="ConstructionDate"> ConstructionDate </lable>
+        <label onformchange="ConstructionDate"> ConstructionDate </label>
         <InputText id="ConstructionDate" @bind-Value="_Estate.ConstructionDate" class="form-control" />
     </div>
     <div>
-        <lable onformchange="EstateDescription"> EstateDescription </lable>
+        <label onformchange="EstateDescription"> EstateDescription </label>
         <InputText id="EstateDescription" @bind-Value="_Estate.EstateDescription" class="form-control" />
     </div>
     <div>
-        <lable onformchange="PublishDate"> PublishDate </lable>
+        <label onformchange="PublishDate"> PublishDate </label>
         <InputDate id="PublishDate" @bind-Value="_Estate.PublishDate" class="form-control" />
     </div>
     <div>
-        <lable onformchange="County"> County </lable>
+        <label onformchange="County"> County </label>
+        <p>@_Estate.CountyId</p>
         <InputSelect id="_Estate.CountyId"  @bind-Value="_Estate.CountyId" class="form-control">
             @foreach (var county in counties)
             {
                 <option label="@county.CountyName ">
-                    @county.Id
+                <option value="@_Estate.CountyId" selected="selected">@county.Id</option>
                 </option>
             }
             </InputSelect>
     </div>
     <div>
-        <lable onformchange="Category"> Category </lable>
+        <label onformchange="Category"> Category </label>
        
         <InputSelect id="_Estate.CategoryId" @bind-Value="_Estate.CategoryId" class="form-control">
             @foreach (var category in categories)
@@ -85,7 +86,8 @@ else
 
     </div>
     <div>
-        <lable onformchange="Realtor"> Realtor  </lable>
+        <label onformchange="Realtor"> Realtor  </label>
+        <p>@selectedRealtor.FirstName</p>
         <InputSelect onselect="@_Estate.RealtorId" @bind-Value="_Estate.RealtorId" class="form-control">
             @foreach (var realtors in realtors)
             {
@@ -99,19 +101,22 @@ else
 </EditForm>
 
 @code {
+   
     [Parameter]
     public int? Id { get; set; }
+
     [SupplyParameterFromForm]
     public UpdateEstateDto _Estate { get; set; } = new UpdateEstateDto();
     List<Category> categories = new List<Category>();
     List<County> counties = new List<County>();
     List<Realtor> realtors = new List<Realtor>();
-
-    public string? selectedRealtor;
-    public int? selectedCounty;
-    public int? selectedCategory;
+    
+    public Realtor selectedRealtor;
+    public County selectedCounty;
+    public Category selectedCategory;
     protected override async Task OnParametersSetAsync()
     {
+        await Task.Delay(500);
         if (Id is not null)
         {
             var result = await Http.GetFromJsonAsync<UpdateEstateDto>($"https://localhost:7190/api/Estate/{Id}");
@@ -121,18 +126,18 @@ else
         var category = await Http.GetFromJsonAsync<List<Category>>("https://localhost:7190/api/Category");
         var county = await Http.GetFromJsonAsync<List<County>>("https://localhost:7190/api/County");
         var realtor = await Http.GetFromJsonAsync<List<Realtor>>("https://localhost:7190/api/Realtor");
-
-
-        // var currentRealtor = realtors.FirstOrDefault(r => r.Id == _Estate.RealtorId);
-        // var currentCategory = categories.FirstOrDefault(r => r.Id == _Estate.CategoryId);
-        // var currentCounty = counties.FirstOrDefault(r => r.Id == _Estate.CountyId);
-
-        // selectedCategory = _Estate.CategoryId;
-        // selectedCounty = _Estate.CountyId;
-        // selectedRealtor = _Estate.RealtorId;
         if (category is not null) categories = category;
         if (county is not null) counties = county;
         if (realtor is not null) realtors = realtor;
+
+        var currentRealtor = realtors.FirstOrDefault(r => r.Id == _Estate.RealtorId);
+        var currentCategory = categories.FirstOrDefault(r => r.Id == _Estate.CategoryId);
+        var currentCounty = counties.FirstOrDefault(r => r.Id == _Estate.CountyId);
+
+        selectedCategory = currentCategory;
+        selectedCounty = currentCounty;
+        selectedRealtor = currentRealtor;
+ 
     }
 
     async Task HandleSubmit()
