@@ -1,0 +1,90 @@
+﻿@page "/EstateDetails/{id:int}"
+@using DTOs
+@using Models
+@inject HttpClient http
+@inject NavigationManager NavigationManager
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+@*author Gustaf*@
+
+<PageTitle>Estates</PageTitle>
+
+<h3>Estates</h3>
+
+@if (_Estate.Id == 0)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                @* <th>Id</th> *@
+                <th>Address</th>
+                <th>Starting Price</th>
+                <th>Living Area Kvm</th>
+                <th>NumberOfRooms</th>
+                <th>BiAreaKvm</th>
+                <th>EstateAreaKvm</th>
+                <th>MonthlyFee</th>
+                <th>RunningCosts</th>
+                <th>ConstructionDate</th>
+                <th>EstateDescription</th>
+                <th>PublishDate</th>
+                <th>County</th>
+                <th>Category</th>
+                <th>Realtor</th>
+
+            </tr>
+
+
+
+                <tr>
+                    @* <td>@estate.Id</td> *@
+                <td>@_Estate.Address</td>
+                <td>@_Estate.StartingPrice</td>
+                <td>@_Estate.LivingAreaKvm</td>
+                <td>@_Estate.NumberOfRooms</td>
+                <td>@_Estate.BiAreaKvm</td>
+                <td>@_Estate.EstateAreaKvm</td>
+                <td>@_Estate.MonthlyFee</td>
+                <td>@_Estate.RunningCosts</td>
+                <td>@_Estate.ConstructionDate</td>
+                <td>@_Estate.EstateDescription</td>
+                <td>@_Estate.PublishDate</td>
+                <td>@_Estate?.County?.CountyName</td>
+                <td>@_Estate?.Category?.EstateCategory</td>
+                <td>@_Estate?.Realtor?.FirstName @_Estate?.Realtor?.LastName</td>
+                @foreach (var picture in pictures)
+                {
+                    <img src="@picture.PictureUrl" width="100px" />
+                }
+                </tr>
+        </thead>
+    </table>
+}
+
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+
+    [SupplyParameterFromForm]
+    public EstateDto _Estate { get; set; } = new EstateDto();
+    public List<Picture> pictures = new List<Picture>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(500);
+        if (Id is not null)
+        {
+
+
+            var result = await http.GetFromJsonAsync<EstateDto>($"https://localhost:7190/api/Estate/{Id}");
+            if (result is not null) { _Estate = result; }
+            if (_Estate.Pictures != null) { pictures = _Estate.Pictures; }
+            // var pictures = await http.GetFromJsonAsync<List<Picture>>("https://localhost:7190/api/Picture");
+
+        }
+    }
+}

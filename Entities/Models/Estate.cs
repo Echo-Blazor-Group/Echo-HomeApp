@@ -29,6 +29,7 @@ namespace Models
         public string EstateDescription { get; set; } = string.Empty;
         [Required]
         public DateOnly? PublishDate { get; set; } = new DateOnly();
+        public bool OnTheMarket { get; set; } = true;
 
         //Relational
         public County? County { get; set; }

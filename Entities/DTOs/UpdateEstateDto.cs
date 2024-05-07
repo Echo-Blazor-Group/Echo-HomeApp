@@ -26,6 +26,7 @@ namespace DTOs
         public string EstateDescription { get; set; } = string.Empty;
 
         public DateOnly? PublishDate { get; set; } = new DateOnly();
+        public bool OnTheMarket { get; set; } = true;
         //Relational
         public int CountyId { get; set; }      
         public int CategoryId { get; set; }

@@ -62,6 +62,7 @@ else
 
                         
                         <td><button class="btn btn-primary" @onclick="@(() => EstateEdit(@estate.Id))">Edit</button></td>
+                        <td><button class="btn btn-primary" @onclick="@(() => EstateDetails(@estate.Id))">Details</button></td>
 
                     </tr>
                 }
@@ -103,6 +104,10 @@ else
     void EstateEdit(int id)
     {
         NavigationManager.NavigateTo($"EstateEditTest/{id}");
+    }
+    void EstateDetails(int id)
+    {
+        NavigationManager.NavigateTo($"EstateDetails/{id}");
     }
 
 
