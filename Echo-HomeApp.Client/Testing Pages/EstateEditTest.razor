@@ -61,39 +61,66 @@ else
         <InputDate id="PublishDate" @bind-Value="_Estate.PublishDate" class="form-control" />
     </div>
     <div>
-        <label onformchange="County"> County </label>
-        <p>@_Estate.CountyId</p>
-        <InputSelect id="_Estate.CountyId"  @bind-Value="_Estate.CountyId" class="form-control">
+        <label onformchange="County"> County | Current : @selectedCounty?.CountyName </label>
+        <InputSelect id="_Estate.CountyId" @bind-Value="_Estate.CountyId" class="form-control">
             @foreach (var county in counties)
             {
-                <option label="@county.CountyName ">
-                <option value="@_Estate.CountyId" selected="selected">@county.Id</option>
-                </option>
+                @if (selectedCounty?.Id == county.Id)
+                {
+                    <option value="@county.Id" selected="selected" label="@county.CountyName">
+                        @county.Id
+                    </option>
+                }
+                else
+                {
+                    <option value="@county.Id" label="@county.CountyName">
+                        @county.Id
+                    </option>
+                }
             }
-            </InputSelect>
+        </InputSelect>
     </div>
     <div>
-        <label onformchange="Category"> Category </label>
-       
+        <label onformchange="Category"> Category | current : @selectedCategory?.EstateCategory</label>
         <InputSelect id="_Estate.CategoryId" @bind-Value="_Estate.CategoryId" class="form-control">
             @foreach (var category in categories)
             {
-                <option label="@category.EstateCategory">
-                    @category.Id
-                </option>
+
+                @if (selectedCategory?.Id == category.Id)
+                {
+                    <option value="@category.Id" selected="selected" label="@category.EstateCategory">
+                        @category.Id
+                    </option>
+                }
+                else
+                {
+                    <option value="@category.Id" label="@category.EstateCategory">
+                        @category.Id
+                    </option>
+                }
+
+
             }
-            </InputSelect>
+        </InputSelect>
 
     </div>
     <div>
-        <label onformchange="Realtor"> Realtor  </label>
-        <p>@selectedRealtor.FirstName</p>
-        <InputSelect onselect="@_Estate.RealtorId" @bind-Value="_Estate.RealtorId" class="form-control">
-            @foreach (var realtors in realtors)
+        <label onformchange="Realtor"> Realtor | current : @selectedRealtor?.FirstName @selectedRealtor?.LastName </label>
+        <InputSelect @bind-Value="_Estate.RealtorId" class="form-control">
+            @foreach (var realtor in realtors)
             {
-                <option label="@realtors.FirstName @realtors.LastName">
-                    @realtors.Id
-                </option>
+                @if (selectedRealtor?.Id is not null)
+                {
+                    <option value="@realtor.Id" selected="selected" label="@realtor.FirstName @realtor.LastName">
+                        @realtor.Id
+                    </option>
+                }
+                else
+                {
+                    <option label="@realtor.FirstName @realtor.LastName">
+                       @realtor.Id
+                    </option>
+                }
             }
         </InputSelect>
     </div>
@@ -101,16 +128,17 @@ else
 </EditForm>
 
 @code {
-   
+
     [Parameter]
     public int? Id { get; set; }
 
     [SupplyParameterFromForm]
     public UpdateEstateDto _Estate { get; set; } = new UpdateEstateDto();
+    public EstateDto? _Estate1 { get; set; } = new EstateDto();
     List<Category> categories = new List<Category>();
     List<County> counties = new List<County>();
     List<Realtor> realtors = new List<Realtor>();
-    
+
     public Realtor selectedRealtor;
     public County selectedCounty;
     public Category selectedCategory;
@@ -119,8 +147,11 @@ else
         await Task.Delay(500);
         if (Id is not null)
         {
+
             var result = await Http.GetFromJsonAsync<UpdateEstateDto>($"https://localhost:7190/api/Estate/{Id}");
+            var result2 = await Http.GetFromJsonAsync<EstateDto>($"https://localhost:7190/api/Estate/{Id}");
             if (result is not null) { _Estate = result; }
+            if (result is not null) { _Estate1 = result2; }
         }
 
         var category = await Http.GetFromJsonAsync<List<Category>>("https://localhost:7190/api/Category");
@@ -130,14 +161,13 @@ else
         if (county is not null) counties = county;
         if (realtor is not null) realtors = realtor;
 
-        var currentRealtor = realtors.FirstOrDefault(r => r.Id == _Estate.RealtorId);
-        var currentCategory = categories.FirstOrDefault(r => r.Id == _Estate.CategoryId);
-        var currentCounty = counties.FirstOrDefault(r => r.Id == _Estate.CountyId);
+        var currentrealtor = realtors.FirstOrDefault(r => r.Id == _Estate1?.Realtor?.Id);
+        var currentcategory = categories.FirstOrDefault(r => r.Id == _Estate1?.Category?.Id);
+        var currentcounty = counties.FirstOrDefault(r => r.Id == _Estate1?.County?.Id);
 
-        selectedCategory = currentCategory;
-        selectedCounty = currentCounty;
-        selectedRealtor = currentRealtor;
- 
+        if (currentrealtor is not null) selectedRealtor = currentrealtor;
+        if (currentcounty is not null) selectedCounty = currentcounty;
+        if (currentcategory is not null) selectedCategory = currentcategory;
     }
 
     async Task HandleSubmit()
@@ -146,7 +176,7 @@ else
         if (Id is not null)
         {
             var result = await Http.PutAsJsonAsync($"https://localhost:7190/api/Estate/{Id}", _Estate);
-             // _Estate = await result.Content.ReadFromJsonAsync<UpdateEstateDto>();
+            // _Estate = await result.Content.ReadFromJsonAsync<UpdateEstateDto>();
         }
         else
         {
