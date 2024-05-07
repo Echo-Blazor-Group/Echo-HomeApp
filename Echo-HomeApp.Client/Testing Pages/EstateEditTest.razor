@@ -62,12 +62,12 @@ else
     </div>
     <div>
         <label onformchange="County"> County </label>
-        <p>@_Estate.CountyId</p>
-        <InputSelect id="_Estate.CountyId"  @bind-Value="_Estate.CountyId" class="form-control">
+        @* <p>@_Estate.County.Id</p> *@
+        <InputSelect id="_Estate.CountyId"  @bind-Value="_Estate.County.Id" class="form-control">
             @foreach (var county in counties)
             {
                 <option label="@county.CountyName ">
-                <option value="@_Estate.CountyId" selected="selected">@county.Id</option>
+                <option value="@_Estate.County.Id" selected="selected">@county.Id</option>
                 </option>
             }
             </InputSelect>
@@ -75,7 +75,7 @@ else
     <div>
         <label onformchange="Category"> Category </label>
        
-        <InputSelect id="_Estate.CategoryId" @bind-Value="_Estate.CategoryId" class="form-control">
+        <InputSelect id="_Estate.CategoryId" @bind-Value="_Estate.Category.Id" class="form-control">
             @foreach (var category in categories)
             {
                 <option label="@category.EstateCategory">
@@ -87,8 +87,8 @@ else
     </div>
     <div>
         <label onformchange="Realtor"> Realtor  </label>
-        <p>@selectedRealtor.FirstName</p>
-        <InputSelect onselect="@_Estate.RealtorId" @bind-Value="_Estate.RealtorId" class="form-control">
+        @* <p>@selectedRealtor.FirstName</p> *@
+        <InputSelect onselect="@_Estate.Realtor.Id" @bind-Value="_Estate.Realtor.Id" class="form-control">
             @foreach (var realtors in realtors)
             {
                 <option label="@realtors.FirstName @realtors.LastName">
@@ -106,7 +106,7 @@ else
     public int? Id { get; set; }
 
     [SupplyParameterFromForm]
-    public UpdateEstateDto _Estate { get; set; } = new UpdateEstateDto();
+    public EstateDto _Estate { get; set; } = new EstateDto();
     List<Category> categories = new List<Category>();
     List<County> counties = new List<County>();
     List<Realtor> realtors = new List<Realtor>();
@@ -119,7 +119,7 @@ else
         await Task.Delay(500);
         if (Id is not null)
         {
-            var result = await Http.GetFromJsonAsync<UpdateEstateDto>($"https://localhost:7190/api/Estate/{Id}");
+            var result = await Http.GetFromJsonAsync<EstateDto>($"https://localhost:7190/api/Estate/{Id}");
             if (result is not null) { _Estate = result; }
         }
 
@@ -130,9 +130,9 @@ else
         if (county is not null) counties = county;
         if (realtor is not null) realtors = realtor;
 
-        var currentRealtor = realtors.FirstOrDefault(r => r.Id == _Estate.RealtorId);
-        var currentCategory = categories.FirstOrDefault(r => r.Id == _Estate.CategoryId);
-        var currentCounty = counties.FirstOrDefault(r => r.Id == _Estate.CountyId);
+        var currentRealtor = realtors.FirstOrDefault(r => r.Id == _Estate.Realtor.Id);
+        var currentCategory = categories.FirstOrDefault(r => r.Id == _Estate.Category.Id);
+        var currentCounty = counties.FirstOrDefault(r => r.Id == _Estate.County.Id);
 
         selectedCategory = currentCategory;
         selectedCounty = currentCounty;

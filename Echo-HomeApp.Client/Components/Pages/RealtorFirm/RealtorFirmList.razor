@@ -19,7 +19,9 @@
     <p><em>Loading...</em></p>
 }
 
-<Button Color="ButtonColor.Primary" @onclick="CreateNewAsync"><Icon Name="IconName.Clipboard" /> Add new</Button>
+<div id="create-button">
+    <Button Color="ButtonColor.Primary" @onclick="CreateNewAsync"><Icon Name="IconName.Clipboard" /> Add new</Button>
+</div>
 
 <QuickGrid Class="table" Items="RealtorFirms">
     <PropertyColumn Property="rf => rf.Id" Title="Id" />
@@ -37,7 +39,7 @@
 
 @code {
     // TODO: (Samed) Position add-button to the right, in line with the other buttons
-    // TODO: (Samed) Add pagination for every ten firms on this page
+    // TODO: (Samed) Add pagination / show more for every five firms on this page
 
     IQueryable<RealtorFirmGetDTO> RealtorFirms;
 
@@ -56,6 +58,10 @@
 
     private async Task GoToDetailsAsync(int id)
     {
+        if (id == null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
         NavigationManager.NavigateTo($"/realtorfirm/details?id={id}");
     }
 
