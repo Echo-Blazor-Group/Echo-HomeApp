@@ -77,12 +77,14 @@ else
                         @county.Id
                     </option>
                 }
+
             }
         </InputSelect>
     </div>
     <div>
         <label onformchange="Category"> Category | current : @selectedCategory?.EstateCategory</label>
         <InputSelect id="_Estate.CategoryId" @bind-Value="_Estate.CategoryId" class="form-control">
+
             @foreach (var category in categories)
             {
 
@@ -108,6 +110,7 @@ else
         <label onformchange="Realtor"> Realtor | current : @selectedRealtor?.FirstName @selectedRealtor?.LastName </label>
         <InputSelect @bind-Value="_Estate.RealtorId" class="form-control">
             @foreach (var realtor in realtors)
+
             {
                 @if (selectedRealtor?.Id is not null)
                 {
@@ -135,6 +138,7 @@ else
     [SupplyParameterFromForm]
     public UpdateEstateDto _Estate { get; set; } = new UpdateEstateDto();
     public EstateDto? _Estate1 { get; set; } = new EstateDto();
+
     List<Category> categories = new List<Category>();
     List<County> counties = new List<County>();
     List<Realtor> realtors = new List<Realtor>();
@@ -150,6 +154,7 @@ else
 
             var result = await Http.GetFromJsonAsync<UpdateEstateDto>($"https://localhost:7190/api/Estate/{Id}");
             var result2 = await Http.GetFromJsonAsync<EstateDto>($"https://localhost:7190/api/Estate/{Id}");
+
             if (result is not null) { _Estate = result; }
             if (result is not null) { _Estate1 = result2; }
         }

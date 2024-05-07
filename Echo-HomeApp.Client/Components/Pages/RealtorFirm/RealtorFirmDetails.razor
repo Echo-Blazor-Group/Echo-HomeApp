@@ -29,37 +29,36 @@
                     <DataAnnotationsValidator />
                     <ValidationSummary />
                     <div class="mb-3">
-                        <InputNumber id="id" @bind-Value="RealtorFirm.Id" class="form-control" />
+                        <label for="id" class="form-label">Id: </label>
+                        <InputNumber id="id" @bind-Value="RealtorFirm.Id" disabled class="form-control" />
                         <ValidationMessage For="() => RealtorFirm.Id" class="text-danger" />
                     </div>
                     <div class="mb-3">
+                        <label for="name" class="form-label">Name: </label>
                         <InputText id="name" @bind-Value="RealtorFirm.Name" class="form-control" />
                         <ValidationMessage For="() => RealtorFirm.Name" class="text-danger" />
                     </div>
                     <div class="mb-3">
+                        <label for="presentation" class="form-label">About this firm: </label>
                         <InputText id="presentation" @bind-Value="RealtorFirm.RealtorFirmPresentation" class="form-control" />
                         <ValidationMessage For="() => RealtorFirm.RealtorFirmPresentation" class="text-danger" />
                     </div>
                     <div class="mb-3">
+                        <label for="Logotype" class="form-label">Logotype URL: </label>
                         <InputText id="logotype" @bind-Value="RealtorFirm.Logotype" class="form-control" />
                         <ValidationMessage For="() => RealtorFirm.Logotype" class="text-danger" />
+                    </div>
+                    <div class="mb-3">
+                        @* TODO: Use @onchange to give RealtorFirm.Logotype value more dynamically?
+                    Make the logotype display here after URL is input *@
+                        @if (RealtorFirm.Logotype != null)
+                        {
+                            <img src="@RealtorFirm.Logotype" alt="Logotype for @RealtorFirm.Name" width="200px" />
+                        }
                     </div>
                 </EditForm>
             </div>
         </div>
-
-
-
-@*         <dl class="row">
-            <dt class="col-sm-2">Name</dt>
-            <dt class="col-sm-10">@RealtorFirmDTO.Name</dt>
-            <dt class="col-sm-2">About</dt>
-            <dd class="col-sm-10">@RealtorFirmDTO.RealtorFirmPresentation</dd>
-            <dt class="col-sm-2">Logotype url</dt>
-            <dd class="col-sm-10">@RealtorFirmDTO.Logotype</dd>
-            <dt class="col-sm-2">Logotype image</dt>
-            <dd class="col-sm-10"><img src="@RealtorFirmDTO.Logotype" alt="Logotype for @RealtorFirmDTO.Name" class="img-fluid" /></dd>
-        </dl> *@
     }
 </div>
 <div>
@@ -92,31 +91,56 @@
 
     private async Task EditAsync(int id)
     {
-        await httpClient.PutAsJsonAsync<RealtorFirmGetDTO>($@"https://localhost:7190/api/RealtorFirm/{id}", RealtorFirm);
-        NavigationManager.NavigateTo("/realtorfirms");
+        // TODO: (Samed) add edit confirmation here? "Are you sure..."-popup:
+        // https://demos.blazorbootstrap.com/confirm-dialog
+
+        HttpResponseMessage response = new();
+        
+        try
+        {
+            await httpClient.PutAsJsonAsync<RealtorFirmGetDTO>($@"https://localhost:7190/api/RealtorFirm/{id}", RealtorFirm);
+            NavigationManager.NavigateTo("/realtorfirms");
+            // (Samed) Send success toast message or Blazor Alert to next page
+        }
+        catch(WebException ex) when ((ex.Response as HttpWebResponse)?.StatusCode == HttpStatusCode.NotFound)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+        catch (WebException ex) when ((ex.Response as HttpWebResponse)?.StatusCode == HttpStatusCode.BadRequest)
+        {
+            // (Samed) Show toast message or Blazor Alert
+        }
+        catch (WebException ex) when ((ex.Response as HttpWebResponse)?.StatusCode == HttpStatusCode.InternalServerError)
+        {
+            // (Samed) Show toast message or Blazor Alert
+        }
     }
 
     private async Task DeleteAsync(int id)
     {
-        // TODO: (Samed) add delete confirmation here? "Are you sure..."-popup
-
-        HttpResponseMessage response = await httpClient.DeleteAsync($@"https://localhost:7190/api/RealtorFirm/{id}");
-
-        if(response.IsSuccessStatusCode)
+        // TODO: (Samed) add delete confirmation here? "Are you sure..."-popup:
+        // https://demos.blazorbootstrap.com/confirm-dialog
+        
+        HttpResponseMessage response = new();
+        try
         {
+            response = await httpClient.DeleteAsync($@"https://localhost:7190/api/RealtorFirm/{id}");
             NavigationManager.NavigateTo("/realtorfirms");
-            // TODO: Send toast message to next page
+            // (Samed) Send success toast message or Blazor Alert to next page
         }
-
-        //     NavigationManager.NavigateTo("/realtorfirms");
-        // }
-        // catch(HttpRequestException ex) when (ex is {StatusCode: HttpStatusCode.NotFound})
-        // {
-        //     string error = $"Page doesn't exist.";
-        // }
-        // catch (HttpRequestException ex) when (ex is { StatusCode: HttpStatusCode.BadRequest })
-        // {
-        //     string error = $"Realtor firm doesn't exist.";
-        // }
+        catch(WebException ex) when (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+        catch(WebException ex) when (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            // (Samed) Show toast message or Blazor Alert
+            // ToastMessage badRequestMessage = new ToastMessage(ToastType.Danger, $"Realtor firm doesn't exist: {response.StatusCode}.");
+            // ToastService.Notify(badRequestMessage);
+        }
+        catch (WebException ex) when (response.StatusCode == HttpStatusCode.InternalServerError)
+        {
+            // (Samed) Show toast message or Blazor Alert
+        }
     }
 }

@@ -58,23 +58,32 @@
     // Http-post call on form submit
     private async Task AddRealtorFirmAsync()
     {
-        // Send post request and catch response message
-        HttpResponseMessage response = await httpClient.PostAsJsonAsync("https://localhost:7190/api/RealtorFirm", RealtorFirm);
+        // Variable to catch response message
+        HttpResponseMessage response = new HttpResponseMessage();
 
-        if(response.IsSuccessStatusCode)
+        try
         {
+            response = await httpClient.PostAsJsonAsync("https://localhost:7190/api/RealtorFirm", RealtorFirm);
             // TODO: (Samed) Get Location in Http-response and extract id
-            // Testat:
-            // - lägga till inställning (AllowAutoRedirect = false) i program.cs - gav inget
-            // - kollat Postman, där Location kommer med
-
-            // TODO: (Samed) Redirect to to details page
+            // Redirect to to details page
+            // Show success Toast-message or Blazor Alert on next page
 
             // In the meantime, navigate to list of realtor firms
             NavigationManager.NavigateTo("/realtorfirms");
         }
-        // TODO: else: show fail toastmessage
-
-        // TODO: (Samed) Show success Toast-message on next page
+        catch(WebException ex) when (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+        catch (WebException ex) when (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            // (Samed) Show toast message or Blazor Alert
+            // ToastMessage badRequestMessage = new ToastMessage(ToastType.Danger, $"Realtor firm doesn't exist: {response.StatusCode}.");
+            // ToastService.Notify(badRequestMessage);
+        }
+        catch (WebException ex) when (response.StatusCode == HttpStatusCode.InternalServerError)
+        {
+            // (Samed) Show toast message or Blazor Alert
+        }
     }
 }
