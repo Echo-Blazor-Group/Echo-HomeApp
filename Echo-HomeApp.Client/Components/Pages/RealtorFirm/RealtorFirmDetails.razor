@@ -15,15 +15,42 @@
 
 <PageTitle>Edit realtor firm</PageTitle>
 
-<h1>Edit realtor firm</h1>
-
 <div>
-    @if (RealtorFirmDTO is null)
+    @if (RealtorFirm is null)
     {
         <p><em>Loading...</em></p>
     }
     else {
-        <dl class="row">
+        <h1>Edit @RealtorFirm.Name</h1>
+
+        <div class="row">
+            <div class="col-md-4">
+                <EditForm method="post" Model="RealtorFirm">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+                    <div class="mb-3">
+                        <InputNumber id="id" @bind-Value="RealtorFirm.Id" class="form-control" />
+                        <ValidationMessage For="() => RealtorFirm.Id" class="text-danger" />
+                    </div>
+                    <div class="mb-3">
+                        <InputText id="name" @bind-Value="RealtorFirm.Name" class="form-control" />
+                        <ValidationMessage For="() => RealtorFirm.Name" class="text-danger" />
+                    </div>
+                    <div class="mb-3">
+                        <InputText id="presentation" @bind-Value="RealtorFirm.RealtorFirmPresentation" class="form-control" />
+                        <ValidationMessage For="() => RealtorFirm.RealtorFirmPresentation" class="text-danger" />
+                    </div>
+                    <div class="mb-3">
+                        <InputText id="logotype" @bind-Value="RealtorFirm.Logotype" class="form-control" />
+                        <ValidationMessage For="() => RealtorFirm.Logotype" class="text-danger" />
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+
+
+
+@*         <dl class="row">
             <dt class="col-sm-2">Name</dt>
             <dt class="col-sm-10">@RealtorFirmDTO.Name</dt>
             <dt class="col-sm-2">About</dt>
@@ -32,30 +59,32 @@
             <dd class="col-sm-10">@RealtorFirmDTO.Logotype</dd>
             <dt class="col-sm-2">Logotype image</dt>
             <dd class="col-sm-10"><img src="@RealtorFirmDTO.Logotype" alt="Logotype for @RealtorFirmDTO.Name" class="img-fluid" /></dd>
-        </dl>
+        </dl> *@
     }
 </div>
 <div>
     <Button Type="ButtonType.Link" To="/realtorfirms" Color="ButtonColor.Secondary"><Icon Name="IconName.ArrowReturnLeft" /> Cancel</Button>
-    <Button Color="ButtonColor.Success" @onclick="() => EditAsync(RealtorFirmDTO.Id)"><Icon Name="IconName.PencilSquare" /> Edit</Button>
-    <Button Color="ButtonColor.Danger" @onclick="() => DeleteAsync(RealtorFirmDTO.Id)"><Icon Name="IconName.Trash" /> Delete</Button>
+    <Button Color="ButtonColor.Success" @onclick="() => EditAsync(RealtorFirm.Id)"><Icon Name="IconName.PencilSquare" /> Edit</Button>
+    <Button Color="ButtonColor.Danger" @onclick="() => DeleteAsync(RealtorFirm.Id)"><Icon Name="IconName.Trash" /> Delete</Button>
 </div>
 
 @code {
 
     // TODO: (Samed) Add DeActivate()-method and button to this page
 
-    public RealtorFirmGetDTO RealtorFirmDTO { get; set; }
-
     [SupplyParameterFromQuery]
     public int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    public RealtorFirmGetDTO RealtorFirm { get; set; }
+
 
     protected override async Task OnInitializedAsync()
     {
         await Task.Delay(500);
-        RealtorFirmDTO = await httpClient.GetFromJsonAsync<RealtorFirmGetDTO>($@"https://localhost:7190/api/RealtorFirm/{Id}");
+        RealtorFirm = await httpClient.GetFromJsonAsync<RealtorFirmGetDTO>($@"https://localhost:7190/api/RealtorFirm/{Id}");
 
-        if (RealtorFirmDTO is null)
+        if (RealtorFirm is null)
         {
             NavigationManager.NavigateTo("notfound");
         }
@@ -63,8 +92,8 @@
 
     private async Task EditAsync(int id)
     {
-        // Make it Edit on this same page, instead of rerouting
-        // NavigationManager.NavigateTo($@"/realtorfirm/edit?id={id}");
+        await httpClient.PutAsJsonAsync<RealtorFirmGetDTO>($@"https://localhost:7190/api/RealtorFirm/{id}", RealtorFirm);
+        NavigationManager.NavigateTo("/realtorfirms");
     }
 
     private async Task DeleteAsync(int id)
