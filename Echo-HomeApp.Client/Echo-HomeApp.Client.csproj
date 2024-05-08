@@ -20,4 +20,8 @@
     <ProjectReference Include="..\Entities\Echo-HomeApp.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Testing Pages\" />
+  </ItemGroup>
+
 </Project>
