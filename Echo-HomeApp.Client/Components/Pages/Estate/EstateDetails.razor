@@ -59,7 +59,15 @@ else
                 {
                     <img src="@picture.PictureUrl" width="100px" />
                 }
-                <td><button class="btn btn-primary" @onclick="@(() => Remove())">Remove</button></td>
+                @if(_Estate.OnTheMarket == false)
+                {
+                    <td><button class="btn btn-primary" @onclick="@(() => Remove())">Return To Market</button></td>
+                }
+                else
+                {
+                    <td><button class="btn btn-primary" @onclick="@(() => Remove())">Remove From Market</button></td>
+                }
+                
             </tr>
         </thead>
     </table>
@@ -68,12 +76,24 @@ else
 {
     <EditForm Model="_Estate" OnSubmit="RemoveEstateFromMarket">
         <div>
-            <label onformchange="OnTheMarket">Do You Wish To Remove Estate From the Market? </label>
+            
             <InputCheckbox hidden id="RemoveFromMarket" @bind-Value="_Estate.OnTheMarket" class="form-check"  />
         </div>
-        <div><button type="submit" class="btn btn-primary">Remove</button> 
-            <button class="btn btn-primary" @onclick="@(() => Remove())">Don´t remove</button>
+        @if(_Estate.OnTheMarket == true)
+        {
+            <div>
+                <button type="submit" class="btn btn-primary">Remove From Market</button>
+                <button class="btn btn-primary" @onclick="@(() => Remove())">Don´t remove</button>
             </div>
+        }
+        else
+        {
+            <div>
+                <button type="submit" class="btn btn-primary">Return To Market</button>
+                <button class="btn btn-primary" @onclick="@(() => Remove())">Don´t Return to market</button>
+            </div>
+        }
+
     </EditForm>
 }
 
