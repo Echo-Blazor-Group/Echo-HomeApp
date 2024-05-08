@@ -1,0 +1,89 @@
+﻿@page "/EstatesList"
+@inject HttpClient httpClient
+@inject NavigationManager NavigationManager
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+@{
+    /// <summary>
+    /// Author: Gustaf Stolen from Samed Salman
+    /// This page lists all Estates
+    /// </summary>
+}
+
+<PageTitle>Estates</PageTitle>
+
+<h1>Estates</h1>
+
+@if (Estates is null)
+{
+    <p><em>Loading...</em></p>
+}
+
+<div id="create-button">
+    <Button Color="ButtonColor.Primary" @onclick="CreateNewAsync"><Icon Name="IconName.Clipboard" /> Add new</Button>
+</div>
+
+<QuickGrid Class="table" Items="Estates">
+    <PropertyColumn Property="rf => rf.Id" Title="Id" />
+    <PropertyColumn Property="rf => rf.Address" Title="Address" Sortable="true" />
+    <PropertyColumn Property="rf => rf.StartingPrice" Title="Starting Price" />
+    <PropertyColumn Property="rf => rf.LivingAreaKvm" Title="LivingAreaKvm" />
+    <PropertyColumn Property="rf => rf.NumberOfRooms" Title="Number Of Rooms" />
+    <PropertyColumn Property="rf => rf.BiAreaKvm" Title="BiAreaKvm" />
+    <PropertyColumn Property="rf => rf.EstateAreaKvm" Title="EstateAreaKvm" />
+    <PropertyColumn Property="rf => rf.MonthlyFee" Title="MonthlyFee" />
+    <PropertyColumn Property="rf => rf.RunningCosts" Title="RunningCosts" />
+    <PropertyColumn Property="rf => rf.ConstructionDate" Title="ConstructionDate" />
+    <PropertyColumn Property="rf => rf.EstateDescription" Title="EstateDescription" />
+    <PropertyColumn Property="rf => rf.PublishDate" Title="PublishDate" />
+    <PropertyColumn Property="rf => rf.County.CountyName" Title="County" />
+    <PropertyColumn Property="rf => rf.Category.EstateCategory" Title="Category" />
+    <PropertyColumn Property="rf => rf.Realtor.FirstName" Title="Realtor" />
+    <PropertyColumn Property="rf => rf.Pictures" Title="Pictures" />
+    <TemplateColumn Context="estate" Title="estate pic">
+        @* <img src="@realtorFirm.Logotype" alt="Logotype for @realtorFirm.Name" width="100px" /> *@
+    </TemplateColumn>
+    <TemplateColumn Context="estate" Title="Handle">
+        <Button Color="ButtonColor.Primary" @onclick="() => GoToDetailsAsync(estate.Id)"><Icon Name="IconName.FileText" /> Details</Button>
+    </TemplateColumn>
+</QuickGrid>
+
+
+
+@code {
+
+    IQueryable<EstateDto> Estates;
+    IQueryable<RealtorGetDTO> Realtors;
+    IQueryable<County> Counties;
+    IQueryable<Category> Categories;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(500);
+
+        List<EstateDto> estatesFromApi = await httpClient.GetFromJsonAsync<List<EstateDto>>("https://localhost:7190/api/Estate");
+        List<RealtorGetDTO> realtorFromApi = await httpClient.GetFromJsonAsync<List<RealtorGetDTO>>("https://localhost:7190/api/Realtor");
+        List<County> countyFromApi = await httpClient.GetFromJsonAsync<List<County>>("https://localhost:7190/api/County");
+        List<Category> categoryFromApi = await httpClient.GetFromJsonAsync<List<Category>>("https://localhost:7190/api/Category");
+
+        if (estatesFromApi == null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+        Estates = estatesFromApi.AsQueryable();
+    }
+
+    private async Task GoToDetailsAsync(int id)
+    {
+        if (id == null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+        NavigationManager.NavigateTo($"/estate/details?id={id}");
+    }
+
+    private async Task CreateNewAsync(MouseEventArgs e)
+    {
+        NavigationManager.NavigateTo("/estate/create");
+    }
+}
