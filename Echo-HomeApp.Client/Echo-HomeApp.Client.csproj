@@ -11,6 +11,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Testing Pages\**" />
+    <Content Remove="Testing Pages\**" />
+    <EmbeddedResource Remove="Testing Pages\**" />
+    <None Remove="Testing Pages\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Blazor.Bootstrap" Version="2.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" Version="8.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.4" />
