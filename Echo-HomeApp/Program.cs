@@ -1,3 +1,4 @@
+using BlazorBootstrap;
 using Echo_HomeApp.Components;
 using Microsoft.Extensions.Options;
 
@@ -10,8 +11,8 @@ namespace Echo_HomeApp
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddRazorComponents()
-                .AddInteractiveWebAssemblyComponents();
+            builder.Services.AddRazorComponents().AddInteractiveWebAssemblyComponents();
+            
             builder.Services.AddBlazorBootstrap();
 
             var app = builder.Build();
@@ -32,7 +33,7 @@ namespace Echo_HomeApp
 
             app.UseHttpsRedirection();
             
-
+            
             app.UseStaticFiles();
             app.UseAntiforgery();
            
