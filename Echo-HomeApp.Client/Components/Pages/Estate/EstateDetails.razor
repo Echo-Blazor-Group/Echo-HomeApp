@@ -17,6 +17,7 @@
 }
 else
 {
+    <button class="btn btn-primary" @onclick="@(() => EstateNavigate())">Back</button>
     <table class="table">
         <thead>
             <tr>
@@ -24,24 +25,22 @@ else
                 <th>Address</th>
                 <th>Starting Price</th>
                 <th>Living Area Kvm</th>
-                <th>NumberOfRooms</th>
-                <th>BiAreaKvm</th>
-                <th>EstateAreaKvm</th>
-                <th>MonthlyFee</th>
-                <th>RunningCosts</th>
-                <th>ConstructionDate</th>
-                <th>EstateDescription</th>
-                <th>PublishDate</th>
+                <th>Number Of Rooms</th>
+                <th>BiArea Kvm</th>
+                <th>Estate Area Kvm</th>
+                <th>Monthly Fee</th>
+                <th>Running Costs</th>
+                <th>Construction Date</th>
+                <th>Estate Description</th>
+                <th>Publish Date</th>
                 <th>County</th>
                 <th>Category</th>
                 <th>Realtor</th>
 
             </tr>
 
-
-
-                <tr>
-                    @* <td>@estate.Id</td> *@
+            <tr>
+                @* <td>@estate.Id</td> *@
                 <td>@_Estate.Address</td>
                 <td>@_Estate.StartingPrice</td>
                 <td>@_Estate.LivingAreaKvm</td>
@@ -60,14 +59,29 @@ else
                 {
                     <img src="@picture.PictureUrl" width="100px" />
                 }
-                </tr>
+                <td><button class="btn btn-primary" @onclick="@(() => Remove())">Remove</button></td>
+            </tr>
         </thead>
     </table>
 }
+@if (WishToRemoveFromMarket == true)
+{
+    <EditForm Model="_Estate" OnSubmit="RemoveEstateFromMarket">
+        <div>
+            <label onformchange="OnTheMarket">Do You Wish To Remove Estate From the Market? </label>
+            <InputCheckbox hidden id="RemoveFromMarket" @bind-Value="_Estate.OnTheMarket" class="form-check"  />
+        </div>
+        <div><button type="submit" class="btn btn-primary">Remove</button> 
+            <button class="btn btn-primary" @onclick="@(() => Remove())">Don´t remove</button>
+            </div>
+    </EditForm>
+}
+
 
 @code {
     [Parameter]
     public int? Id { get; set; }
+    public bool WishToRemoveFromMarket { get; set; }
 
     [SupplyParameterFromForm]
     public EstateDto _Estate { get; set; } = new EstateDto();
@@ -78,13 +92,31 @@ else
         await Task.Delay(500);
         if (Id is not null)
         {
-
-
             var result = await http.GetFromJsonAsync<EstateDto>($"https://localhost:7190/api/Estate/{Id}");
             if (result is not null) { _Estate = result; }
             if (_Estate.Pictures != null) { pictures = _Estate.Pictures; }
             // var pictures = await http.GetFromJsonAsync<List<Picture>>("https://localhost:7190/api/Picture");
 
         }
+    }
+    async Task RemoveEstateFromMarket()
+    {
+        if (WishToRemoveFromMarket == true)
+        {
+            var result = await http.PatchAsJsonAsync($"https://localhost:7190/api/Estate/{Id}", _Estate);
+            NavigationManager.NavigateTo("Estates");
+        }
+        else { WishToRemoveFromMarket = false; }
+
+    }
+    void EstateNavigate()
+    {
+        NavigationManager.NavigateTo("Estates");
+    }
+    async Task Remove()
+    {
+        if (WishToRemoveFromMarket == false) { WishToRemoveFromMarket = true; }
+       else { WishToRemoveFromMarket = false; }
+        
     }
 }
