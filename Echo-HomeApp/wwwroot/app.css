@@ -27,3 +27,9 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+
+.readonly {
+    background-color: #f0f0f0 !important; /* Gray background */
+    pointer-events: none !important; /* Disable pointer events */
+    user-select: none !important;
+}

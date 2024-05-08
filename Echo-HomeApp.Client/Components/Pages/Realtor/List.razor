@@ -28,7 +28,7 @@ https://localhost:7190/api/Realtor?RealtorFirm=exempel *@
     <PropertyColumn Property="r => r.PhoneNumber" Title="Phone" Sortable="true" />
     <PropertyColumn Property="r => r.IsActive" Title="Active" Sortable="true" />
         <TemplateColumn Context="realtor">
-        <Button Color= "ButtonColor.Primary" @onclick="() => Edit(realtor.Id)"><Icon Name="IconName.Pen" /></Button>
+        <Button Color= "ButtonColor.Primary" @onclick="() => RedirectToDetailsAsync(realtor.Id)"><Icon Name="IconName.FileText" /></Button>
         </TemplateColumn>
 </QuickGrid>
 @code
@@ -48,5 +48,5 @@ https://localhost:7190/api/Realtor?RealtorFirm=exempel *@
         }
     }
 
-    private void Edit(string realtorId) => NavigationManager.NavigateTo($"/realtor/edit/{realtorId}");
+    private void RedirectToDetailsAsync(string realtorId) => NavigationManager.NavigateTo($"/realtor/details/{realtorId}");
 }

@@ -9,10 +9,10 @@ namespace DTOs.RealtorDTOs
 {
     public class RealtorEditDTO
     {
-        [Required]
+        
         public string FirstName { get; set; } = string.Empty;
 
-        [Required]
+        
         public string LastName { get; set; } = string.Empty;
 
         [Required]
@@ -21,8 +21,6 @@ namespace DTOs.RealtorDTOs
 
         [Required]
         public string PhoneNumber { get; set; } = string.Empty;
-
-        [Required]
         public string ProfilePicture { get; set; } = "https://placehold.co/600x400/png";
         public string? OldPassword { get; set; }
         public string? NewPassword { get; set; }
