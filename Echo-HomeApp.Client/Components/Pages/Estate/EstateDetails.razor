@@ -1,0 +1,142 @@
+﻿@page "/EstateDetails/{id:int}"
+@using DTOs
+@using Models
+@inject HttpClient http
+@inject NavigationManager NavigationManager
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+@*author Gustaf*@
+
+<PageTitle>Estates</PageTitle>
+
+<h3>Estates</h3>
+
+@if (_Estate.Id == 0)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <button class="btn btn-primary" @onclick="@(() => EstateNavigate())">Back</button>
+    <table class="table">
+        <thead>
+            <tr>
+                @* <th>Id</th> *@
+                <th>Address</th>
+                <th>Starting Price</th>
+                <th>Living Area Kvm</th>
+                <th>Number Of Rooms</th>
+                <th>BiArea Kvm</th>
+                <th>Estate Area Kvm</th>
+                <th>Monthly Fee</th>
+                <th>Running Costs</th>
+                <th>Construction Date</th>
+                <th>Estate Description</th>
+                <th>Publish Date</th>
+                <th>County</th>
+                <th>Category</th>
+                <th>Realtor</th>
+
+            </tr>
+
+            <tr>
+                @* <td>@estate.Id</td> *@
+                <td>@_Estate.Address</td>
+                <td>@_Estate.StartingPrice</td>
+                <td>@_Estate.LivingAreaKvm</td>
+                <td>@_Estate.NumberOfRooms</td>
+                <td>@_Estate.BiAreaKvm</td>
+                <td>@_Estate.EstateAreaKvm</td>
+                <td>@_Estate.MonthlyFee</td>
+                <td>@_Estate.RunningCosts</td>
+                <td>@_Estate.ConstructionDate</td>
+                <td>@_Estate.EstateDescription</td>
+                <td>@_Estate.PublishDate</td>
+                <td>@_Estate?.County?.CountyName</td>
+                <td>@_Estate?.Category?.EstateCategory</td>
+                <td>@_Estate?.Realtor?.FirstName @_Estate?.Realtor?.LastName</td>
+                @foreach (var picture in pictures)
+                {
+                    <img src="@picture.PictureUrl" width="100px" />
+                }
+                @if(_Estate.OnTheMarket == false)
+                {
+                    <td><button class="btn btn-primary" @onclick="@(() => Remove())">Return To Market</button></td>
+                }
+                else
+                {
+                    <td><button class="btn btn-primary" @onclick="@(() => Remove())">Remove From Market</button></td>
+                }
+                
+            </tr>
+        </thead>
+    </table>
+}
+@if (WishToRemoveFromMarket == true)
+{
+    <EditForm Model="_Estate" OnSubmit="RemoveEstateFromMarket">
+        <div>
+            
+            <InputCheckbox hidden id="RemoveFromMarket" @bind-Value="_Estate.OnTheMarket" class="form-check"  />
+        </div>
+        @if(_Estate.OnTheMarket == true)
+        {
+            <div>
+                <button type="submit" class="btn btn-primary">Remove From Market</button>
+                <button class="btn btn-primary" @onclick="@(() => Remove())">Don´t remove</button>
+            </div>
+        }
+        else
+        {
+            <div>
+                <button type="submit" class="btn btn-primary">Return To Market</button>
+                <button class="btn btn-primary" @onclick="@(() => Remove())">Don´t Return to market</button>
+            </div>
+        }
+
+    </EditForm>
+}
+
+
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+    public bool WishToRemoveFromMarket { get; set; }
+
+    [SupplyParameterFromForm]
+    public EstateDto _Estate { get; set; } = new EstateDto();
+    public List<Picture> pictures = new List<Picture>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(500);
+        if (Id is not null)
+        {
+            var result = await http.GetFromJsonAsync<EstateDto>($"https://localhost:7190/api/Estate/{Id}");
+            if (result is not null) { _Estate = result; }
+            if (_Estate.Pictures != null) { pictures = _Estate.Pictures; }
+            // var pictures = await http.GetFromJsonAsync<List<Picture>>("https://localhost:7190/api/Picture");
+
+        }
+    }
+    async Task RemoveEstateFromMarket()
+    {
+        if (WishToRemoveFromMarket == true)
+        {
+            var result = await http.PatchAsJsonAsync($"https://localhost:7190/api/Estate/{Id}", _Estate);
+            NavigationManager.NavigateTo("Estates");
+        }
+        else { WishToRemoveFromMarket = false; }
+
+    }
+    void EstateNavigate()
+    {
+        NavigationManager.NavigateTo("Estates");
+    }
+    async Task Remove()
+    {
+        if (WishToRemoveFromMarket == false) { WishToRemoveFromMarket = true; }
+       else { WishToRemoveFromMarket = false; }
+        
+    }
+}

@@ -1,5 +1,7 @@
 ﻿@inherits LayoutComponentBase
 
+<Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.TopRight" />
+
 <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
     <div class="container-fluid">
         <a class="navbar-brand" href="">EchoHomeApp</a>
@@ -16,12 +18,22 @@
                 </li>
                 <li class="nav-item">
                     <NavLink class="nav-link" href="estates">
-                        <span class="oi oi-plus" aria-hidden="true"></span> Estate Test
+                        <span class="oi oi-plus" aria-hidden="true"></span> Estate
+                    </NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="EstatesList">
+                        <span class="oi oi-plus" aria-hidden="true"></span> EstateList
                     </NavLink>
                 </li>
                 <li class="nav-item">
                     <NavLink class="nav-link" href="/realtorfirms">
                         <span class="oi oi-plus" aria-hidden="true"></span> Realtor firms
+                    </NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/realtor">
+                        <span class="oi oi-plus" aria-hidden="true"></span> Realtors
                     </NavLink>
                 </li>
             </ul>
@@ -50,6 +62,5 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
-
 
 
