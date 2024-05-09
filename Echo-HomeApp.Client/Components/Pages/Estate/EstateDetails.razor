@@ -1,6 +1,7 @@
 ﻿@page "/EstateDetails/{id:int}"
 @using DTOs
 @using Models
+@using System.Text.Json
 @inject HttpClient http
 @inject NavigationManager NavigationManager
 @rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
@@ -55,11 +56,11 @@ else
                 <td>@_Estate?.County?.CountyName</td>
                 <td>@_Estate?.Category?.EstateCategory</td>
                 <td>@_Estate?.Realtor?.FirstName @_Estate?.Realtor?.LastName</td>
-                @foreach (var picture in pictures)
+@*                 @foreach (var picture in Estatepictures)
                 {
                     <img src="@picture.PictureUrl" width="100px" />
-                }
-                @if(_Estate.OnTheMarket == false)
+                } *@
+                @if (_Estate.OnTheMarket == false)
                 {
                     <td><button class="btn btn-primary" @onclick="@(() => Remove())">Return To Market</button></td>
                 }
@@ -67,7 +68,7 @@ else
                 {
                     <td><button class="btn btn-primary" @onclick="@(() => Remove())">Remove From Market</button></td>
                 }
-                
+
             </tr>
         </thead>
     </table>
@@ -76,10 +77,10 @@ else
 {
     <EditForm Model="_Estate" OnSubmit="RemoveEstateFromMarket">
         <div>
-            
-            <InputCheckbox hidden id="RemoveFromMarket" @bind-Value="_Estate.OnTheMarket" class="form-check"  />
+
+            <InputCheckbox hidden id="RemoveFromMarket" @bind-Value="_Estate.OnTheMarket" class="form-check" />
         </div>
-        @if(_Estate.OnTheMarket == true)
+        @if (_Estate.OnTheMarket == true)
         {
             <div>
                 <button type="submit" class="btn btn-primary">Remove From Market</button>
@@ -105,20 +106,41 @@ else
 
     [SupplyParameterFromForm]
     public EstateDto _Estate { get; set; } = new EstateDto();
-    public List<Picture> pictures = new List<Picture>();
+    // public List<Picture> Estatepictures = new List<Picture>();
 
     protected override async Task OnInitializedAsync()
     {
         await Task.Delay(500);
         if (Id is not null)
         {
-            var result = await http.GetFromJsonAsync<EstateDto>($"https://localhost:7190/api/Estate/{Id}");
-            if (result is not null) { _Estate = result; }
-            if (_Estate.Pictures != null) { pictures = _Estate.Pictures; }
-            // var pictures = await http.GetFromJsonAsync<List<Picture>>("https://localhost:7190/api/Picture");
+            try
+            {
+                var result = await http.GetFromJsonAsync<EstateDto>($"https://localhost:7190/api/Estate/{Id}"); 
+
+                if (result is not null)
+                {
+                     _Estate = result;
+                    // var pictures = JsonSerializer.Deserialize<List<Picture>>(result.Pictures);
+                    // var json = await result.Content.ReadAsStringAsync();
+                    // _Estate = JsonSerializer.Deserialize<List<EstateDto>>(json);
+                }
+
+                // foreach (var picture in _Estate)
+                // {
+                //     Estatepictures.Add(picture);
+                // }
+            }
+            catch (JsonException ex)
+            {
+               
+                Console.WriteLine($"Deserialization error: {ex.Message}");
+                
+            }
+
 
         }
     }
+
     async Task RemoveEstateFromMarket()
     {
         if (WishToRemoveFromMarket == true)
@@ -135,8 +157,9 @@ else
     }
     async Task Remove()
     {
-        if (WishToRemoveFromMarket == false) { WishToRemoveFromMarket = true; }
-       else { WishToRemoveFromMarket = false; }
-        
+        WishToRemoveFromMarket = !WishToRemoveFromMarket;
+        //  if (WishToRemoveFromMarket == false) { WishToRemoveFromMarket = true; }
+        // else { WishToRemoveFromMarket = false; }
+
     }
 }
