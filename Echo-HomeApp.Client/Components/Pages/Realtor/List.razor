@@ -19,6 +19,9 @@ https://localhost:7190/api/Realtor?RealtorFirm=exempel *@
     <p><em>Loading...</em></p>
 }
 
+<div id="create-button">
+    <Button Color="ButtonColor.Primary" @onclick="RedirectToCreateNew"><Icon Name="IconName.Clipboard" /> Add new</Button>
+</div>
 
 <QuickGrid Class="table" Items="Realtors">
     <PropertyColumn Property="r => r.FirstName" Title="First Name" Sortable="true" />
@@ -28,7 +31,7 @@ https://localhost:7190/api/Realtor?RealtorFirm=exempel *@
     <PropertyColumn Property="r => r.PhoneNumber" Title="Phone" Sortable="true" />
     <PropertyColumn Property="r => r.IsActive" Title="Active" Sortable="true" />
         <TemplateColumn Context="realtor">
-        <Button Color= "ButtonColor.Primary" @onclick="() => RedirectToDetailsAsync(realtor.Id)"><Icon Name="IconName.FileText" /></Button>
+        <Button Color= "ButtonColor.Primary" @onclick="() => RedirectToDetails(realtor.Id)"><Icon Name="IconName.FileText" /></Button>
         </TemplateColumn>
 </QuickGrid>
 @code
@@ -48,5 +51,8 @@ https://localhost:7190/api/Realtor?RealtorFirm=exempel *@
         }
     }
 
-    private void RedirectToDetailsAsync(string realtorId) => NavigationManager.NavigateTo($"/realtor/details/{realtorId}");
+    private void RedirectToDetails(string realtorId) => NavigationManager.NavigateTo($"/realtor/details/{realtorId}");
+
+    private void RedirectToCreateNew() => NavigationManager.NavigateTo("/realtor/create");
+    
 }

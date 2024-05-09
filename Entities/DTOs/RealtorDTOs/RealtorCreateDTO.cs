@@ -18,10 +18,12 @@ namespace DTOs.RealtorDTOs
         public string Email { get; set; } = string.Empty;
         [Required]
         public string PhoneNumber { get; set; } = string.Empty;
-        [Required]
+        [Required(ErrorMessage = "Password is required.")]
+        [MinLength(6, ErrorMessage = "Password must be at least 6 characters long.")]
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@!])[A-Za-z\d@!]*$", ErrorMessage = "Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character (@ or !).")]
         public string? Password { get; set; }
         [Required]
-        public int RealtorFirmId { get; set; }
-        public string ProfilePicture { get; set; } = "https://placehold.co/600x400/png";
+        public int? RealtorFirmId { get; set; }
+        public string ProfilePicture { get; set; } = "https://shorturl.at/CJOR3";
     }
 }
