@@ -1,7 +1,5 @@
 ﻿@page "/realtorfirm/details/"
 @using Microsoft.AspNetCore.Components.QuickGrid
-@using DTOs
-@using Models
 @inject HttpClient httpClient
 @inject NavigationManager NavigationManager
 @inject ToastService ToastService
@@ -81,7 +79,7 @@
     protected override async Task OnInitializedAsync()
     {
         await Task.Delay(500);
-        RealtorFirm = await httpClient.GetFromJsonAsync<RealtorFirmGetDTO>($@"https://localhost:7190/api/RealtorFirm/{Id}");
+        RealtorFirm = await httpClient.GetFromJsonAsync<RealtorFirmGetDTO>($"https://localhost:7190/api/RealtorFirm/{Id}");
 
         if (RealtorFirm is null)
         {
@@ -98,7 +96,7 @@
         
         try
         {
-            await httpClient.PutAsJsonAsync<RealtorFirmGetDTO>($@"https://localhost:7190/api/RealtorFirm/{id}", RealtorFirm);
+            await httpClient.PutAsJsonAsync<RealtorFirmGetDTO>($"https://localhost:7190/api/RealtorFirm/{id}", RealtorFirm);
             NavigationManager.NavigateTo("/realtorfirms");
             // (Samed) Send success toast message or Blazor Alert to next page
         }
@@ -108,11 +106,11 @@
         }
         catch (WebException ex) when ((ex.Response as HttpWebResponse)?.StatusCode == HttpStatusCode.BadRequest)
         {
-            // (Samed) Show toast message or Blazor Alert
+            // (Samed) Show toast message or Blazor Alert - alternativly use blazors built in error page?
         }
         catch (WebException ex) when ((ex.Response as HttpWebResponse)?.StatusCode == HttpStatusCode.InternalServerError)
         {
-            // (Samed) Show toast message or Blazor Alert
+            // (Samed) Show toast message or Blazor Alert - alternativly use blazors built in error page?
         }
     }
 
