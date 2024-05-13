@@ -69,13 +69,13 @@ namespace Services
             await _sessionStorageService.SetItemAsync(JWT_KEY, content.Token);
 
             // Invoke the event LoginChange to get user name
-            LoginChange.Invoke(GetUserName(content.Token));
+            LoginChange?.Invoke(GetUserName(content.Token));
 
 
             // Create a JwtSecurityTokenHandler to parse token
             var handler = new JwtSecurityTokenHandler();
             // Read the JWT token
-            var token = handler.ReadJwtToken(JWT_KEY);
+            var token = handler.ReadJwtToken(content.Token);
             // Extract the expiration claim
             var expiration = token.ValidTo;
 
@@ -111,7 +111,7 @@ namespace Services
             // Local token variable to create and store token from string
             JwtSecurityToken jwt = new JwtSecurityToken(token);
             // Get name value from JWT
-            return jwt.Claims.First(c => c.Type == ClaimTypes.GivenName).Value;
+            return jwt.Claims.First(c => c.Type == JwtRegisteredClaimNames.Email).Value;
         }
     }
 }
