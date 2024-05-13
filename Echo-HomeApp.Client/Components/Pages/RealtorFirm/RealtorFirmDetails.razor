@@ -25,11 +25,14 @@
             <div class="col-md-4">
                 <EditForm method="post" Model="RealtorFirm">
                     <DataAnnotationsValidator />
-                    <ValidationSummary />
                     <div class="mb-3">
                         <label for="id" class="form-label">Id: </label>
                         <InputNumber id="id" @bind-Value="RealtorFirm.Id" disabled class="form-control" />
                         <ValidationMessage For="() => RealtorFirm.Id" class="text-danger" />
+                    </div>
+                    <div class="mb-3">
+                        <Switch @bind-Value="RealtorFirm.Active" Label="Currently active" />
+                        <ValidationMessage For="() => RealtorFirm.Active" class="text-danger" />
                     </div>
                     <div class="mb-3">
                         <label for="name" class="form-label">Name: </label>
@@ -73,13 +76,13 @@
     public int Id { get; set; }
 
     [SupplyParameterFromForm]
-    public RealtorFirmGetDTO RealtorFirm { get; set; }
+    public RealtorFirmWithIdDTO RealtorFirm { get; set; }
 
 
     protected override async Task OnInitializedAsync()
     {
         await Task.Delay(500);
-        RealtorFirm = await httpClient.GetFromJsonAsync<RealtorFirmGetDTO>($"https://localhost:7190/api/RealtorFirm/{Id}");
+        RealtorFirm = await httpClient.GetFromJsonAsync<RealtorFirmWithIdDTO>($"https://localhost:7190/api/RealtorFirm/{Id}");
 
         if (RealtorFirm is null)
         {
@@ -96,7 +99,7 @@
         
         try
         {
-            await httpClient.PutAsJsonAsync<RealtorFirmGetDTO>($"https://localhost:7190/api/RealtorFirm/{id}", RealtorFirm);
+            await httpClient.PutAsJsonAsync<RealtorFirmWithIdDTO>($"https://localhost:7190/api/RealtorFirm/{id}", RealtorFirm);
             NavigationManager.NavigateTo("/realtorfirms");
             // (Samed) Send success toast message or Blazor Alert to next page
         }
@@ -126,11 +129,11 @@
             NavigationManager.NavigateTo("/realtorfirms");
             // (Samed) Send success toast message or Blazor Alert to next page
         }
-        catch(WebException ex) when (response.StatusCode == HttpStatusCode.NotFound)
+        catch (WebException ex) when (response.StatusCode == HttpStatusCode.NotFound)
         {
             NavigationManager.NavigateTo("notfound");
         }
-        catch(WebException ex) when (response.StatusCode == HttpStatusCode.BadRequest)
+        catch (WebException ex) when (response.StatusCode == HttpStatusCode.BadRequest)
         {
             // (Samed) Show toast message or Blazor Alert
             // ToastMessage badRequestMessage = new ToastMessage(ToastType.Danger, $"Realtor firm doesn't exist: {response.StatusCode}.");

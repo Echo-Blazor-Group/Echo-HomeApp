@@ -17,27 +17,19 @@ namespace DTOs
         [Required, DisplayName("About this firm")]
         public string RealtorFirmPresentation { get; set; } = string.Empty;
         public string? Logotype { get; set; } = string.Empty;
+        public bool Active { get; set; }
     }
 
     // Get class has id
-    public class RealtorFirmGetDTO
+    public class RealtorFirmWithIdDTO
     {
+        [Required]
         public int Id { get; set; }
         [Required]
         public string Name { get; set; } = string.Empty;
         [Required, DisplayName("About this firm")]
         public string RealtorFirmPresentation { get; set; } = string.Empty;
         public string? Logotype { get; set; } = string.Empty;
-    }
-
-    // Put class has id
-    public class RealtorFirmPutDTO
-    {
-        public int Id { get; set; }
-        [Required]
-        public string Name { get; set; } = string.Empty;
-        [Required, DisplayName("About this firm")]
-        public string RealtorFirmPresentation { get; set; } = string.Empty;
-        public string? Logotype { get; set; } = string.Empty;
+        public bool Active { get; set; }
     }
 }
