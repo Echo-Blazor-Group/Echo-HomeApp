@@ -111,7 +111,7 @@ namespace Services
             // Local token variable to create and store token from string
             JwtSecurityToken jwt = new JwtSecurityToken(token);
             // Get name value from JWT
-            return jwt.Claims.First(c => c.Type == ClaimTypes.GivenName).Value;
+            return jwt.Claims.First(c => c.Type == ClaimTypes.Email).Value;
         }
     }
 }

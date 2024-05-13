@@ -12,6 +12,7 @@ HttpClientHandler handler = new HttpClientHandler()
     AllowAutoRedirect = false
 };
 
+// TODO: Singleton not optimal for HttpClient. Find workaround for AuthenticationService.
 builder.Services.AddSingleton(sp => new HttpClient(handler)
 {
     BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
