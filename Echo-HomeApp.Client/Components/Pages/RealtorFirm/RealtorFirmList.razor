@@ -14,7 +14,7 @@
 
 <h1>Realtor firms</h1>
 
-@if (RealtorFirms is null)
+@if (_realtorFirms is null)
 {
     <p><em>Loading...</em></p>
 }
@@ -23,9 +23,10 @@
     <Button Color="ButtonColor.Primary" @onclick="CreateNewAsync"><Icon Name="IconName.Clipboard" /> Add new</Button>
 </div>
 
-<QuickGrid Class="table" Items="RealtorFirms">
+<QuickGrid Class="table" Items="_realtorFirms" Virtualize="true">
     <PropertyColumn Property="rf => rf.Id" Title="Id" />
     <PropertyColumn Property="rf => rf.Name" Title="Name" Sortable="true" />
+    <PropertyColumn Property="rf => rf.Active" Title="Active" Sortable="true" />
     <PropertyColumn Property="rf => rf.RealtorFirmPresentation" Title="About this firm" />
     <TemplateColumn Context="realtorFirm" Title="Logotype">
         <img src="@realtorFirm.Logotype" alt="Logotype for @realtorFirm.Name" width="100px" />
@@ -41,19 +42,19 @@
     // TODO: (Samed) Position add-button to the right, in line with the other buttons
     // TODO: (Samed) Add pagination / show more for every five firms on this page
 
-    IQueryable<RealtorFirmGetDTO> RealtorFirms;
+    IQueryable<RealtorFirmWithIdDTO> _realtorFirms;
 
     protected override async Task OnInitializedAsync()
     {
         await Task.Delay(500);
 
-        List<RealtorFirmGetDTO> realtorFirmsFromAPI = await httpClient.GetFromJsonAsync<List<RealtorFirmGetDTO>>("https://localhost:7190/api/RealtorFirm");
+        List<RealtorFirmWithIdDTO> realtorFirmsFromAPI = await httpClient.GetFromJsonAsync<List<RealtorFirmWithIdDTO>>("https://localhost:7190/api/RealtorFirm");
 
         if (realtorFirmsFromAPI == null)
         {
             NavigationManager.NavigateTo("notfound");
         }
-        RealtorFirms = realtorFirmsFromAPI.AsQueryable();
+        _realtorFirms = realtorFirmsFromAPI.AsQueryable();
     }
 
     private async Task GoToDetailsAsync(int id)

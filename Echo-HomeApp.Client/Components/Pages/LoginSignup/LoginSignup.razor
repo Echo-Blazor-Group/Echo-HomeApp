@@ -1,0 +1,65 @@
+﻿@page "/login"
+@using Services
+@inject HttpClient httpClient
+@inject IAuthenticationService AuthenticationService
+@inject NavigationManager NavigationManager
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+@{
+    /// <summary>
+    /// Author: Samed Salman
+    /// This page is for login and signup
+    /// </summary>
+}
+
+<PageTitle>Login</PageTitle>
+
+<h1>Login</h1>
+
+<EditForm method="post" Model="RealtorLogin" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="mb-3>">
+        <label for="email" class="form-label">Email: </label>
+        <InputText id="email" @bind-Value="RealtorLogin.Email"></InputText>
+        <ValidationMessage For="() => RealtorLogin.Email" class="text-danger" />
+    </div>
+    <div class="mb-3>">
+        <label for="password" class="form-label">Password: </label>
+        <InputText id="password" @bind-Value="RealtorLogin.Password"></InputText>
+        <ValidationMessage For="() => RealtorLogin.Password" class="text-danger" />
+    </div>
+    <div>
+        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary"><Icon Name="IconName.DoorOpen" /> Login</Button>
+    </div>
+    @if(expiration is not null)
+    {
+        <p>You are logged in until @expiration?.ToLongTimeString()</p>
+    }
+
+    @if(errorMessage is not null)
+    {
+        <p class="text-danger">@errorMessage</p>
+    }
+</EditForm>
+
+@code {
+    // TODO: (Samed) Plocka ut Login och Signup till separata components
+
+    public RealtorLoginDTO RealtorLogin { get; set; } = new();
+    private DateTime? expiration;
+    private string? errorMessage;
+
+    private async Task OnValidSubmit()
+    {
+        try
+        {
+            expiration = await AuthenticationService.LoginAsync(RealtorLogin);
+            errorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            expiration = null;
+            errorMessage = ex.Message;
+        }
+    }
+}

@@ -1,4 +1,6 @@
+using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Services;
 
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -10,10 +12,14 @@ HttpClientHandler handler = new HttpClientHandler()
     AllowAutoRedirect = false
 };
 
-builder.Services.AddScoped(sp => new HttpClient(handler)
+builder.Services.AddSingleton(sp => new HttpClient(handler)
 {
     BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
 });
+
+// Services for authentication as singletons for longer lifespan
+builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
+builder.Services.AddBlazoredSessionStorageAsSingleton();
 
 builder.Services.AddBlazorBootstrap();
 
