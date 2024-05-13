@@ -102,7 +102,7 @@ namespace Services
             // Empty cache
             _jwtCache = null;
             // Invoke Login event and set it to null (to remove user name)
-            LoginChange.Invoke(null);
+            LoginChange?.Invoke(null);
         }
 
         // Use JWT to retrieve user name
