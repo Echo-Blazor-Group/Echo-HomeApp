@@ -39,7 +39,6 @@ else
                 <th>Realtor</th>
 
             </tr>
-
             <tr>
                 @* <td>@estate.Id</td> *@
                 <td>@_Estate.Address</td>
@@ -69,8 +68,7 @@ else
                 {
                     <td><button class="btn btn-primary" @onclick="@(() => Remove())">Remove</button></td>
                 }
-
-
+                <td></td>
             </tr>
         </thead>
     </table>
@@ -105,10 +103,10 @@ else
     [Parameter]
     public int? Id { get; set; }
     public bool WishToRemoveFromMarket { get; set; }
+    public bool EditImages { get; set; }
 
     [SupplyParameterFromForm]
     public EstateDto _Estate { get; set; } = new EstateDto();
-    // public List<Picture> Estatepictures = new List<Picture>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -121,27 +119,13 @@ else
 
                 if (result is not null)
                 {
-                    _Estate = result;
-                    
-                    // var pictures = JsonSerializer.Deserialize<List<Picture>>(result.Pictures);
-                    // var pictures = JsonSerializer.Deserialize<List<Picture>>(result.Pictures);
-                    // var json = await result.Content.ReadAsStringAsync();
-                    // _Estate = JsonSerializer.Deserialize<List<EstateDto>>(json);
+                    _Estate = result;   
                 }
-
-                // foreach (var picture in _Estate)
-                // {
-                //     Estatepictures.Add(picture);
-                // }
             }
             catch (JsonException ex)
-            {
-               
-                Console.WriteLine($"Deserialization error: {ex.Message}");
-                
+            {        
+                Console.WriteLine($"Deserialization error: {ex.Message}");   
             }
-
-
         }
     }
 
@@ -161,13 +145,17 @@ else
     }
     async Task Remove()
     {
+        //Simplified function provided by Sebbe!
         WishToRemoveFromMarket = !WishToRemoveFromMarket;
         //  if (WishToRemoveFromMarket == false) { WishToRemoveFromMarket = true; }
         // else { WishToRemoveFromMarket = false; }
-
     }
     void EstateEdit(int id)
     {
         NavigationManager.NavigateTo($"EstateEdit/{id}");
+    }
+    void EditImage(int id)
+    {
+        
     }
 }
