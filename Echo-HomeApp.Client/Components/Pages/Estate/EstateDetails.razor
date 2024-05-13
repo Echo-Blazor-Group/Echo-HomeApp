@@ -56,18 +56,20 @@ else
                 <td>@_Estate?.County?.CountyName</td>
                 <td>@_Estate?.Category?.EstateCategory</td>
                 <td>@_Estate?.Realtor?.FirstName @_Estate?.Realtor?.LastName</td>
-@*                 @foreach (var picture in Estatepictures)
+                 @foreach (var picture in _Estate.Pictures)
                 {
                     <img src="@picture.PictureUrl" width="100px" />
-                } *@
+                }
+                <td><button class="btn btn-primary" @onclick="@(() => EstateEdit(@_Estate.Id))">Edit</button></td>
                 @if (_Estate.OnTheMarket == false)
                 {
-                    <td><button class="btn btn-primary" @onclick="@(() => Remove())">Return To Market</button></td>
+                    <td><button class="btn btn-primary" @onclick="@(() => Remove())">Return</button></td>
                 }
                 else
                 {
-                    <td><button class="btn btn-primary" @onclick="@(() => Remove())">Remove From Market</button></td>
+                    <td><button class="btn btn-primary" @onclick="@(() => Remove())">Remove</button></td>
                 }
+
 
             </tr>
         </thead>
@@ -119,7 +121,9 @@ else
 
                 if (result is not null)
                 {
-                     _Estate = result;
+                    _Estate = result;
+                    
+                    // var pictures = JsonSerializer.Deserialize<List<Picture>>(result.Pictures);
                     // var pictures = JsonSerializer.Deserialize<List<Picture>>(result.Pictures);
                     // var json = await result.Content.ReadAsStringAsync();
                     // _Estate = JsonSerializer.Deserialize<List<EstateDto>>(json);
@@ -161,5 +165,9 @@ else
         //  if (WishToRemoveFromMarket == false) { WishToRemoveFromMarket = true; }
         // else { WishToRemoveFromMarket = false; }
 
+    }
+    void EstateEdit(int id)
+    {
+        NavigationManager.NavigateTo($"EstateEdit/{id}");
     }
 }
