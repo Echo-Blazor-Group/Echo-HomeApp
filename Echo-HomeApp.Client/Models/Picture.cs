@@ -7,6 +7,6 @@ namespace Models
         //Author Gustaf & Seb
         public int Id { get; set; }
         public string PictureUrl { get; set; } = string.Empty;
-        public int? EstateId { get; set; }
+        public virtual Estate? Estate { get; set; }
     }
 }

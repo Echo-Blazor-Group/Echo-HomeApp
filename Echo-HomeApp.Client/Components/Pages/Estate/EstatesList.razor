@@ -1,89 +1,163 @@
-﻿@page "/EstatesList"
-@inject HttpClient httpClient
+﻿@page "/Estates"
+@using DTOs
+@using Models
+@inject HttpClient http
 @inject NavigationManager NavigationManager
 @rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
 
-@{
-    /// <summary>
-    /// Author: Gustaf Stolen from Samed Salman
-    /// This page lists all Estates
-    /// </summary>
-}
+@*author Gustaf*@
 
 <PageTitle>Estates</PageTitle>
 
-<h1>Estates</h1>
+<h2>Estates on the market</h2>
 
-@if (Estates is null)
+@if (estates.Count == 0)
 {
     <p><em>Loading...</em></p>
 }
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                @* <th>Id</th> *@
+                <th>Address</th>
+                <th>Starting Price</th>
+                <th>Living Area Kvm</th>
+                <th>NumberOfRooms</th>
+                @* <th>BiAreaKvm</th> *@
+                <th>EstateAreaKvm</th>
+                @* <th>MonthlyFee</th>
+            <th>RunningCosts</th> *@
+                <th>ConstructionDate</th>
+                @* <th>EstateDescription</th>
+            <th>PublishDate</th> *@
+                <th>County</th>
+                <th>Category</th>
+                <th>Realtor</th>
+                
+            </tr>
+            @foreach (var estate in estates.Where(e => e.OnTheMarket == true))
+            {
 
-<div id="create-button">
-    <Button Color="ButtonColor.Primary" @onclick="CreateNewAsync"><Icon Name="IconName.Clipboard" /> Add new</Button>
-</div>
+                <tr>
+                    @* <td>@estate.Id</td> *@
+                    <td>@estate.Address</td>
+                    <td>@estate.StartingPrice</td>
+                    <td>@estate.LivingAreaKvm</td>
+                    <td>@estate.NumberOfRooms</td>
+                    @* <td>@estate.BiAreaKvm</td> *@
+                    <td>@estate.EstateAreaKvm</td>
+                    @* <td>@estate.MonthlyFee</td> *@
+                    @* <td>@estate.RunningCosts</td> *@
+                    <td>@estate.ConstructionDate</td>
+                    @* <td>@estate.EstateDescription</td> *@
+                    @* <td>@estate.PublishDate</td> *@
+                    <td>@estate?.County?.CountyName</td>
+                    <td>@estate?.Category?.EstateCategory</td>
+                    <td>@estate?.Realtor?.FirstName @estate?.Realtor?.LastName</td>
+                    
+                    @* <td><button class="btn btn-primary" @onclick="@(() => EstateEdit(@estate.Id))">Edit</button></td> *@
+                    <td><button class="btn btn-primary" @onclick="@(() => EstateDetails(@estate.Id))">Details</button></td>
+                </tr>
 
-<QuickGrid Class="table" Items="Estates">
-    <PropertyColumn Property="rf => rf.Id" Title="Id" />
-    <PropertyColumn Property="rf => rf.Address" Title="Address" Sortable="true" />
-    <PropertyColumn Property="rf => rf.StartingPrice" Title="Starting Price" />
-    <PropertyColumn Property="rf => rf.LivingAreaKvm" Title="LivingAreaKvm" />
-    <PropertyColumn Property="rf => rf.NumberOfRooms" Title="Number Of Rooms" />
-    <PropertyColumn Property="rf => rf.BiAreaKvm" Title="BiAreaKvm" />
-    <PropertyColumn Property="rf => rf.EstateAreaKvm" Title="EstateAreaKvm" />
-    <PropertyColumn Property="rf => rf.MonthlyFee" Title="MonthlyFee" />
-    <PropertyColumn Property="rf => rf.RunningCosts" Title="RunningCosts" />
-    <PropertyColumn Property="rf => rf.ConstructionDate" Title="ConstructionDate" />
-    <PropertyColumn Property="rf => rf.EstateDescription" Title="EstateDescription" />
-    <PropertyColumn Property="rf => rf.PublishDate" Title="PublishDate" />
-    <PropertyColumn Property="rf => rf.County.CountyName" Title="County" />
-    <PropertyColumn Property="rf => rf.Category.EstateCategory" Title="Category" />
-    <PropertyColumn Property="rf => rf.Realtor.FirstName" Title="Realtor" />
-    <PropertyColumn Property="rf => rf.Pictures" Title="Pictures" />
-    <TemplateColumn Context="estate" Title="estate pic">
-        @* <img src="@realtorFirm.Logotype" alt="Logotype for @realtorFirm.Name" width="100px" /> *@
-    </TemplateColumn>
-    <TemplateColumn Context="estate" Title="Handle">
-        <Button Color="ButtonColor.Primary" @onclick="() => GoToDetailsAsync(estate.Id)"><Icon Name="IconName.FileText" /> Details</Button>
-    </TemplateColumn>
-</QuickGrid>
+            }
+
+        </thead>
+    </table>
+}
+<button class="btn btn-primary" @onclick="EstateAdd">Add A New Estate</button>
 
 
+<h3>Estates of the market</h3>
+<table class="table">
+    <thead>
+        <tr>
+            @* <th>Id</th> *@
+            <th>Address</th>
+            <th>Starting Price</th>
+            <th>Living Area Kvm</th>
+            <th>NumberOfRooms</th>
+            @* <th>BiAreaKvm</th> *@
+            <th>EstateAreaKvm</th>
+            @*                 <th>MonthlyFee</th>
+            <th>RunningCosts</th> *@
+            <th>ConstructionDate</th>
+            @*                 <th>EstateDescription</th>
+            <th>PublishDate</th> *@
+            <th>County</th>
+            <th>Category</th>
+            <th>Realtor</th>
+        </tr>
+        @foreach (var estate in estates.Where(e => e.OnTheMarket == false))
+        {
+            <tr>
+                @* <td>@estate.Id</td> *@
+                <td>@estate.Address</td>
+                <td>@estate.StartingPrice</td>
+                <td>@estate.LivingAreaKvm</td>
+                <td>@estate.NumberOfRooms</td>
+                @* <td>@estate.BiAreaKvm</td> *@
+                <td>@estate.EstateAreaKvm</td>
+                @* <td>@estate.MonthlyFee</td> *@
+                @* <td>@estate.RunningCosts</td> *@
+                <td>@estate.ConstructionDate</td>
+                @* <td>@estate.EstateDescription</td> *@
+                @* <td>@estate.PublishDate</td> *@
+                <td>@estate?.County?.CountyName</td>
+                <td>@estate?.Category?.EstateCategory</td>
+                <td>@estate?.Realtor?.FirstName @estate?.Realtor?.LastName</td>
+                <td>@estate?.Pictures.</td>
+                @* <td><button class="btn btn-primary" @onclick="@(() => EstateEdit(@estate.Id))">Edit</button></td> *@
+                <td><button class="btn btn-primary" @onclick="@(() => EstateDetails(@estate.Id))">Details</button></td>
+            </tr>
+
+        }
+
+    </thead>
+</table>
 
 @code {
 
-    IQueryable<EstateDto> Estates;
-    IQueryable<RealtorGetDTO> Realtors;
-    IQueryable<County> Counties;
-    IQueryable<Category> Categories;
+    List<Estate> estates = new List<Estate>();
+    List<Category> categories = new List<Category>();
+    List<County> counties = new List<County>();
+    // List<RealtorFirm> realtoFirms = new List<RealtorFirm>();
+    // List<Realtor> realtors = new List<Realtor>();
 
     protected override async Task OnInitializedAsync()
     {
         await Task.Delay(500);
 
-        List<EstateDto> estatesFromApi = await httpClient.GetFromJsonAsync<List<EstateDto>>("https://localhost:7190/api/Estate");
-        List<RealtorGetDTO> realtorFromApi = await httpClient.GetFromJsonAsync<List<RealtorGetDTO>>("https://localhost:7190/api/Realtor");
-        List<County> countyFromApi = await httpClient.GetFromJsonAsync<List<County>>("https://localhost:7190/api/County");
-        List<Category> categoryFromApi = await httpClient.GetFromJsonAsync<List<Category>>("https://localhost:7190/api/Category");
-
-        if (estatesFromApi == null)
-        {
-            NavigationManager.NavigateTo("notfound");
-        }
-        Estates = estatesFromApi.AsQueryable();
+        var result = await http.GetFromJsonAsync<List<Estate>>("https://localhost:7190/api/Estate");
+        var category = await http.GetFromJsonAsync<List<Category>>("https://localhost:7190/api/Category");
+        var county = await http.GetFromJsonAsync<List<County>>("https://localhost:7190/api/County");
+        // var realtorFirm = await http.GetFromJsonAsync<List<RealtorFirm>>("https://localhost:7190/api/RealtorFirm");
+        // var realtor = await http.GetFromJsonAsync<List<Realtor>>("https://localhost:7190/api/Realtor");
+        if (result is not null) estates = result;
+        if (category is not null) categories = category;
+        if (county is not null) counties = county;
+        // if (realtorFirm is not null) realtoFirms = realtorFirm;
+        // if (realtor is not null) realtors = realtor;
     }
 
-    private async Task GoToDetailsAsync(int id)
+    void EstateAdd()
     {
-        if (id == null)
-        {
-            NavigationManager.NavigateTo("notfound");
-        }
-        NavigationManager.NavigateTo($"/estate/details?id={id}");
+        NavigationManager.NavigateTo("EstateAdd");
     }
 
-    private async Task CreateNewAsync(MouseEventArgs e)
+    void EstateEdit(int id)
     {
-        NavigationManager.NavigateTo("/estate/create");
+        NavigationManager.NavigateTo($"EstateEdit/{id}");
     }
+    void EstateDetails(int id)
+    {
+        NavigationManager.NavigateTo($"EstateDetails/{id}");
+    }
+
+
 }
+
+    @*Need to add null check and fix for when calling objects so that the site will load even if and object is broken. Currently when calling on
+        houses without mäklare or counties or category the site breaks down.
+    *@
