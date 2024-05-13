@@ -6,22 +6,24 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System;
 using System.Text.Json;
+using System.Net.Http;
 
 namespace Services
 {
     /// <summary>
-    /// Author: Samed Salman
-    /// This service is for handling the JWT-token returned from the API
+    /// Author: Samed, Sebastian
+    /// This service is for receiving, reading and storing the JWT-token returned from the API
     /// </summary>
     public class AuthenticationService : IAuthenticationService
     {
-        private readonly HttpClient _httpClient;
+        // Using factory to create a HttpClient instance that works with this singelton service
+        private readonly IHttpClientFactory _httpClientFactory;
 
         // Session service from the NuGet package "Blazored.SessionStorage" contains .NET-references to Javascript code.
         // SessionStorage is used to store data in secure cookies.
         private ISessionStorageService _sessionStorageService;
 
-        // The string where token is saved, initialized as its own name as convention for constant strings
+        // Key string for key-value pair stored inside session, initialized as its own name as convention for constant strings
         private const string JWT_KEY = nameof(JWT_KEY);
 
         // String variable used to cache the token from the sessionStorage to be used by the client
@@ -31,9 +33,9 @@ namespace Services
         public event Action<string?>? LoginChange;
 
         // Inject HttpClient and SessionStorageService
-        public AuthenticationService(HttpClient httpClient, ISessionStorageService sessionStorageService)
+        public AuthenticationService(IHttpClientFactory httpClientFactory, ISessionStorageService sessionStorageService)
         {
-            _httpClient = httpClient;
+            _httpClientFactory = httpClientFactory;
             _sessionStorageService = sessionStorageService;
         }
 
@@ -46,7 +48,7 @@ namespace Services
             try
             {
                 // Catch a response message from the API endpoint
-                response = await _httpClient.PostAsJsonAsync<RealtorLoginDTO>("https://localhost:7190/api/Realtor/login", userLogin);
+                response = await _httpClientFactory.CreateClient().PostAsJsonAsync<RealtorLoginDTO>("https://localhost:7190/api/Realtor/login", userLogin);
             }
             catch (WebException ex)
             {
@@ -65,20 +67,19 @@ namespace Services
                 throw new InvalidDataException();
             }
 
-            // Store the recieved JWT token
+            // Store the recieved JWT token together with a key string
             await _sessionStorageService.SetItemAsync(JWT_KEY, content.Token);
 
-            // Invoke the event LoginChange to get user name
+            // Invoke the event LoginChange to get user name from token
             LoginChange?.Invoke(GetUserName(content.Token));
 
 
             // Create a JwtSecurityTokenHandler to parse token
             var handler = new JwtSecurityTokenHandler();
             // Read the JWT token
-            var token = handler.ReadJwtToken(content.Token);
-            // Extract the expiration claim
-            var expiration = token.ValidTo;
-
+            JwtSecurityToken token = handler.ReadJwtToken(content.Token);
+            // Extract the expiration time
+            DateTime expiration = token.ValidTo;
             return expiration;
         }
 
@@ -94,7 +95,7 @@ namespace Services
             return _jwtCache;
         }
 
-        // Remove JWT from session storage
+        // Remove JWT from session storage on logout
         public async Task LogoutAsync()
         {
             // Remove token from storage
