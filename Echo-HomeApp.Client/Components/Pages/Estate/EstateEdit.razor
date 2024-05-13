@@ -1,5 +1,5 @@
-﻿@page "/EstateAddTest"
-@page "/EstateEditTest/{id:int}"
+﻿@page "/EstateAdd"
+@page "/EstateEdit/{id:int}"
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 @rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
@@ -84,10 +84,8 @@ else
     <div>
         <label onformchange="Category"> Category | current : @selectedCategory?.EstateCategory</label>
         <InputSelect id="_Estate.CategoryId" @bind-Value="_Estate.CategoryId" class="form-control">
-
             @foreach (var category in categories)
             {
-
                 @if (selectedCategory?.Id == category.Id)
                 {
                     <option value="@category.Id" selected="selected" label="@category.EstateCategory">
@@ -100,12 +98,10 @@ else
                         @category.Id
                     </option>
                 }
-
-
             }
         </InputSelect>
-
     </div>
+
     <div>
         <label onformchange="Realtor"> Realtor | current : @selectedRealtor?.FirstName @selectedRealtor?.LastName </label>
         <InputSelect @bind-Value="_Estate.RealtorId" class="form-control">

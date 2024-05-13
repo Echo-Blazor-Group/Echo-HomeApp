@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 
 namespace Models
 {
@@ -35,8 +36,12 @@ namespace Models
         public County? County { get; set; }
         public Realtor? Realtor { get; set; }
         public Category? Category { get; set; }
-        public List<Picture?>? Pictures { get; set; }
+        public List<Picture> Pictures { get; set; }
 
-
+        public void TurntoJsonObjecs()
+        {
+            string picturesData = File.ReadAllText("Pictures.Json");
+            var pictures1 = JsonSerializer.Deserialize<List<Picture>>(picturesData);   
+        }
     }
 }
