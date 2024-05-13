@@ -16,35 +16,38 @@
 
 <h1>Login</h1>
 
-<EditForm method="post" Model="RealtorLogin" OnValidSubmit="OnValidSubmit">
-    <DataAnnotationsValidator />
-    <div class="mb-3>">
-        <label for="email" class="form-label">Email: </label>
-        <InputText id="email" @bind-Value="RealtorLogin.Email"></InputText>
-        <ValidationMessage For="() => RealtorLogin.Email" class="text-danger" />
-    </div>
-    <div class="mb-3>">
-        <label for="password" class="form-label">Password: </label>
-        <InputText id="password" @bind-Value="RealtorLogin.Password"></InputText>
-        <ValidationMessage For="() => RealtorLogin.Password" class="text-danger" />
-    </div>
-    <div>
-        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary"><Icon Name="IconName.DoorOpen" /> Login</Button>
-    </div>
-    @if(expiration is not null)
-    {
-        <p>You are logged in until @expiration?.ToLongTimeString()</p>
-    }
+<fieldset disabled="@(expiration is not null)">
+    <EditForm method="post" Model="RealtorLogin" OnValidSubmit="OnValidSubmit">
+        <DataAnnotationsValidator />
+        <div class="mb-3>">
+            <label for="email" class="form-label">Email: </label>
+            <InputText id="email" @bind-Value="RealtorLogin.Email"></InputText>
+            <ValidationMessage For="() => RealtorLogin.Email" class="text-danger" />
+        </div>
+        <div class="mb-3>">
+            <label for="password" class="form-label">Password: </label>
+            <InputText id="password" @bind-Value="RealtorLogin.Password"></InputText>
+            <ValidationMessage For="() => RealtorLogin.Password" class="text-danger" />
+        </div>
+        <div>
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary"><Icon Name="IconName.DoorOpen" /> Login</Button>
+        </div>
+        @* If-statements below for debugging *@
+        @if(expiration is not null)
+        {
+            <p>You are logged in until @expiration?.ToLongTimeString()</p>
+        }
 
-    @if(errorMessage is not null)
-    {
-        <p class="text-danger">@errorMessage</p>
-    }
-</EditForm>
+        @if(errorMessage is not null)
+        {
+            <p class="text-danger">@errorMessage</p>
+        }
+    </EditForm>
+</fieldset>
+
 
 @code {
-    // TODO: (Samed) Plocka ut Login och Signup till separata components
-
+    // TODO: (Samed) EV. plocka ut Login och Signup till separata components som kan vara på samma sida
     public RealtorLoginDTO RealtorLogin { get; set; } = new();
     private DateTime? expiration;
     private string? errorMessage;
