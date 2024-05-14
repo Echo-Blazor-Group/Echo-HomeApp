@@ -6,6 +6,8 @@
 @using DTOs
 @using System.Linq;
 
+@*Author Gustaf not as cool as Sameds page function but it works*@
+@* checking if the navigation is bringing along an Id to se if its going to edit or add an estate*@
 @if (Id == null)
 {
     <h3>Add Estate</h3>
@@ -61,65 +63,36 @@ else
         <InputDate id="PublishDate" @bind-Value="_Estate.PublishDate" class="form-control" />
     </div>
     <div>
-        <label onformchange="County"> County | Current : @selectedCounty?.CountyName </label>
+        @* The labels contain the Current : texts for testing purposes to se that the correct value is brought along *@
+        <label onformchange="County"> County @* | Current : @selectedCounty?.CountyName  *@</label>
         <InputSelect id="_Estate.CountyId" @bind-Value="_Estate.CountyId" class="form-control">
             @foreach (var county in counties)
             {
-                @if (selectedCounty?.Id == county.Id)
-                {
-                    <option value="@county.Id" selected="selected" label="@county.CountyName">
-                        @county.Id
-                    </option>
-                }
-                else
-                {
                     <option value="@county.Id" label="@county.CountyName">
                         @county.Id
                     </option>
-                }
-
             }
         </InputSelect>
     </div>
     <div>
-        <label onformchange="Category"> Category | current : @selectedCategory?.EstateCategory</label>
+        <label onformchange="Category"> Category@*  | current : @selectedCategory?.EstateCategory *@</label>
         <InputSelect id="_Estate.CategoryId" @bind-Value="_Estate.CategoryId" class="form-control">
             @foreach (var category in categories)
             {
-                @if (selectedCategory?.Id == category.Id)
-                {
-                    <option value="@category.Id" selected="selected" label="@category.EstateCategory">
-                        @category.Id
-                    </option>
-                }
-                else
-                {
                     <option value="@category.Id" label="@category.EstateCategory">
                         @category.Id
-                    </option>
-                }
+                    </option>  
             }
         </InputSelect>
     </div>
-
     <div>
-        <label onformchange="Realtor"> Realtor | current : @selectedRealtor?.FirstName @selectedRealtor?.LastName </label>
+        <label onformchange="Realtor"> Realtor@*  | current : @selectedRealtor?.FirstName @selectedRealtor?.LastName *@</label>
         <InputSelect @bind-Value="_Estate.RealtorId" class="form-control">
             @foreach (var realtor in realtors)
-
             {
-                @if (selectedRealtor?.Id is not null)
-                {
-                    <option value="@realtor.Id" selected="selected" label="@realtor.FirstName @realtor.LastName">
-                        @realtor.Id
-                    </option>
-                }
-                else
-                {
-                    <option label="@realtor.FirstName @realtor.LastName">
-                       @realtor.Id
-                    </option>
-                }
+                <option label="@realtor.FirstName, @realtor.LastName">
+                    @realtor.Id
+                </option>
             }
         </InputSelect>
     </div>
@@ -127,7 +100,6 @@ else
 </EditForm>
 
 @code {
-
     [Parameter]
     public int? Id { get; set; }
 
@@ -145,6 +117,8 @@ else
     protected override async Task OnParametersSetAsync()
     {
         await Task.Delay(500);
+
+
         if (Id is not null)
         {
 
@@ -169,6 +143,13 @@ else
         if (currentrealtor is not null) selectedRealtor = currentrealtor;
         if (currentcounty is not null) selectedCounty = currentcounty;
         if (currentcategory is not null) selectedCategory = currentcategory;
+
+        //These make sure that the base value of the EditForms input is that of the incomming objects value.
+        //So if the Realtor is Samed then the InputSelect will have automatically selected Samed so that the
+        //user won't have to find the correct realtor everytime they want to change a single field
+        _Estate.CategoryId = _Estate1.Category.Id;
+        _Estate.CountyId = _Estate1.County.Id;
+        _Estate.RealtorId = _Estate1.Realtor.Id;
     }
 
     async Task HandleSubmit()
@@ -176,13 +157,11 @@ else
 
         if (Id is not null)
         {
-            var result = await Http.PutAsJsonAsync($"https://localhost:7190/api/Estate/{Id}", _Estate);
-            // _Estate = await result.Content.ReadFromJsonAsync<UpdateEstateDto>();
+            var result = await Http.PutAsJsonAsync($"https://localhost:7190/api/Estate/{Id}", _Estate); 
         }
         else
         {
             var result = await Http.PostAsJsonAsync($"https://localhost:7190/api/Estate/", _Estate);
-            // _Estate = await result.Content.ReadFromJsonAsync<UpdateEstateDto>();
         }
         NavigationManager.NavigateTo("Estates");
     }

@@ -32,12 +32,11 @@ else
                 <th>Monthly Fee</th>
                 <th>Running Costs</th>
                 <th>Construction Date</th>
-                <th>Estate Description</th>
+                @* <th>Estate Description</th> *@
                 <th>Publish Date</th>
                 <th>County</th>
                 <th>Category</th>
                 <th>Realtor</th>
-
             </tr>
             <tr>
                 @* <td>@estate.Id</td> *@
@@ -50,15 +49,11 @@ else
                 <td>@_Estate.MonthlyFee</td>
                 <td>@_Estate.RunningCosts</td>
                 <td>@_Estate.ConstructionDate</td>
-                <td>@_Estate.EstateDescription</td>
+                @* <td>@_Estate.EstateDescription</td> *@
                 <td>@_Estate.PublishDate</td>
                 <td>@_Estate?.County?.CountyName</td>
                 <td>@_Estate?.Category?.EstateCategory</td>
                 <td>@_Estate?.Realtor?.FirstName @_Estate?.Realtor?.LastName</td>
-                 @foreach (var picture in _Estate.Pictures)
-                {
-                    <img src="@picture.PictureUrl" width="100px" />
-                }
                 <td><button class="btn btn-primary" @onclick="@(() => EstateEdit(@_Estate.Id))">Edit</button></td>
                 @if (_Estate.OnTheMarket == false)
                 {
@@ -68,7 +63,21 @@ else
                 {
                     <td><button class="btn btn-primary" @onclick="@(() => Remove())">Remove</button></td>
                 }
-                <td></td>
+                <td><button class="btn btn-primary" @onclick="@(() => ShowAddPicture(_Estate.Id))">Add Image</button></td>
+            </tr>
+            <tr> 
+                <th>Estate Description</th>
+            </tr>
+            
+                <p width="200px">@_Estate.EstateDescription</p>
+            
+
+            <tr>
+                @foreach (var picture in _Estate.Pictures)
+                {
+                    <img src="@picture.PictureUrl" width="100px" />
+                    <td><button Class="btn btn-primary" @onclick="@(() => ShowEditImages(picture.Id))">Edit Image</button></td>
+                }
             </tr>
         </thead>
     </table>
@@ -98,37 +107,90 @@ else
     </EditForm>
 }
 
+@if (WishToEditImages == true)
+{
+    <td><button Class="btn btn-primary" @onclick="@(() => DeleteAsync(_Picture.Id))">Delete</button></td>
+    <EditForm Model="_Picture" OnSubmit="EditImage">
+        <div>
+            <label onformchange="PictureUrl"> Url </label>
+            <InputText id="PictureUrl" @bind-Value="_Picture.PictureUrl" class="form-control" />
+        </div>
+        <div>
+            
+            <InputNumber hidden id="EstateId" @bind-Value="_Picture.EstateId" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </EditForm>
+    <p></p>
+    <div>
+        <img src="@_Picture.PictureUrl" width="400px" />
+    </div>
+}
+@if (WishToAddImages == true)
+{
+    <EditForm Model="_PictureInsert" OnSubmit="AddPicture">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div>
+            <label onformchange="PictureUrl"> Url </label>
+            <InputText id="PictureUrl" @bind-Value="_PictureInsert.PictureUrl" class="form-control" />
+        </div>
+        <div>
+            <label onformchange="Id"></label>
+            <InputNumber hidden @bind-Value="_PictureInsert.EstateId" class="form-control" />
+        </div> 
+        <button type="submit" class="btn btn-primary">Add Image</button>
+    </EditForm>
+    <p></p>
+    <div>
+        <img src="@_PictureInsert.PictureUrl" width="400px" />
+    </div>
+}
+
 
 @code {
     [Parameter]
     public int? Id { get; set; }
+
+    // placeholder="@Id"
+    public int? PictureId { get; set; }
+
+
+    [SupplyParameterFromForm]
+    public PictureDto _Picture { get; set; } = new PictureDto();
+    public InsertPictureDto _PictureInsert { get; set; } = new InsertPictureDto();
+    // public InsertPictureDto _PictureInsert = new InsertPictureDto();
     public bool WishToRemoveFromMarket { get; set; }
-    public bool EditImages { get; set; }
+    public bool WishToEditImages { get; set; }
+    public bool WishToAddImages { get; set; }
 
     [SupplyParameterFromForm]
     public EstateDto _Estate { get; set; } = new EstateDto();
 
+    private EditContext editContext;
+
+
     protected override async Task OnInitializedAsync()
     {
-        await Task.Delay(500);
+        await Task.Delay(500); 
+        _PictureInsert.EstateId = Id ?? 0;
+
         if (Id is not null)
         {
             try
             {
-                var result = await http.GetFromJsonAsync<EstateDto>($"https://localhost:7190/api/Estate/{Id}"); 
-
+                var result = await http.GetFromJsonAsync<EstateDto>($"https://localhost:7190/api/Estate/{Id}");
                 if (result is not null)
                 {
-                    _Estate = result;   
+                    _Estate = result;
                 }
             }
             catch (JsonException ex)
-            {        
-                Console.WriteLine($"Deserialization error: {ex.Message}");   
+            {
+                Console.WriteLine($"Deserialization error: {ex.Message}");
             }
         }
     }
-
     async Task RemoveEstateFromMarket()
     {
         if (WishToRemoveFromMarket == true)
@@ -150,12 +212,79 @@ else
         //  if (WishToRemoveFromMarket == false) { WishToRemoveFromMarket = true; }
         // else { WishToRemoveFromMarket = false; }
     }
+
+    //Methods for editing images
+    async Task ShowEditImages(int id)
+    {
+        //if a picture edit button is clicked and its not the same picture that is already being edited, then switch or 
+        //just open that picture for editing instead.
+        //otherwise just close the edit or open the edit.
+        WishToEditImages = true;
+        if (id == PictureId)
+        {
+            WishToEditImages = !WishToEditImages;
+        }
+        else
+        { 
+            PictureId = id;
+            var pictures = await http.GetFromJsonAsync<PictureDto>($"https://localhost:7190/api/Pictures/{PictureId}");
+            if (pictures is not null)
+            {
+                _Picture = pictures;
+            } 
+        }
+    }
+
+    async Task EditImage()
+    {
+        if (WishToEditImages == true)
+        {
+            var result = await http.PatchAsJsonAsync($"https://localhost:7190/api/Pictures/{PictureId}",
+            _Picture);
+
+            NavigationManager.NavigateTo($"EstateDetails/{Id}", true);
+        }
+        else { WishToEditImages = false; }
+    }
+
+    async Task ShowAddPicture(int id)
+    {
+        WishToAddImages = !WishToAddImages;
+        _PictureInsert.EstateId = id;
+    }
+    async Task AddPicture()
+    {
+        var result = await http.PostAsJsonAsync($"https://localhost:7190/api/Pictures", _PictureInsert);
+        NavigationManager.NavigateTo($"EstateDetails/{Id}", true);
+    }
+
     void EstateEdit(int id)
     {
         NavigationManager.NavigateTo($"EstateEdit/{id}");
     }
-    void EditImage(int id)
+
+    private async Task DeleteAsync(int id)
     {
-        
+        //stolen from samed, thank you samed
+        HttpResponseMessage response = new();
+        try
+        {
+            var result = await http.DeleteAsync($"https://localhost:7190/api/Pictures/{PictureId}");
+            NavigationManager.NavigateTo($"EstateDetails/{Id}", true); 
+        }
+        catch (WebException ex) when (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+        catch (WebException ex) when (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            // (Samed) Show toast message or Blazor Alert
+            // ToastMessage badRequestMessage = new ToastMessage(ToastType.Danger, $"Realtor firm doesn't exist: {response.StatusCode}.");
+            // ToastService.Notify(badRequestMessage);
+        }
+        catch (WebException ex) when (response.StatusCode == HttpStatusCode.InternalServerError)
+        {
+            // (Samed) Show toast message or Blazor Alert
+        }
     }
 }
