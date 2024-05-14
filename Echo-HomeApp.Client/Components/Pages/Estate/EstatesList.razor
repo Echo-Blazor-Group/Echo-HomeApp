@@ -17,6 +17,46 @@
 }
 else
 {
+    <QuickGrid Class="table" Items="FilteredEstates" Pagination="pagination">
+        <PropertyColumn Property="e => e.Address" Title="Adress"></PropertyColumn>
+        <PropertyColumn Property="e => e.StartingPrice" Title="Starting Price" Sortable="true">
+            <ColumnOptions>
+                <input type="search" @bind="filteredText" @bind:event="oninput" placeholder="search price" />
+            </ColumnOptions>
+        </PropertyColumn>
+        <PropertyColumn Property="e => e.LivingAreaKvm" Title="LivingArea Kvm" Sortable="true">
+            <ColumnOptions>
+                <input type="search" @bind="filteredText" @bind:event="oninput" placeholder="search kvm" />
+            </ColumnOptions>
+        </PropertyColumn>
+        <PropertyColumn Property="e => e.NumberOfRooms" Title="Number of rooms" Sortable="true">
+            <ColumnOptions>
+                <input type="search" @bind="filteredText" @bind:event="oninput" placeholder="search rooms" />
+            </ColumnOptions>
+        </PropertyColumn>
+        <PropertyColumn Property="e => e.EstateAreaKvm" Title="EstateArea Kvm"></PropertyColumn>
+        <PropertyColumn Property="e => e.ConstructionDate" Title="Construction Date" ></PropertyColumn>
+        <PropertyColumn Property="e => e.County.CountyName" Title="County" Sortable="true">
+            <ColumnOptions>
+                <input type="search" @bind="filteredText" @bind:event="oninput" placeholder="search location" />
+            </ColumnOptions>
+        </PropertyColumn>
+        <PropertyColumn Property="e => e.Category.EstateCategory" Title="Category" Sortable="true">
+            <ColumnOptions>
+                <input type="search" @bind="filteredText" @bind:event="oninput" placeholder="search category" />
+            </ColumnOptions>
+        </PropertyColumn>
+        <PropertyColumn Property="e => e.Realtor.FirstName + e.Realtor.LastName" Title="Realtor">
+            <ColumnOptions>
+                <input type="search" @bind="filteredText" @bind:event="oninput" placeholder="search realtor" />
+            </ColumnOptions>
+        </PropertyColumn>
+        <TemplateColumn Context="estates" Title="Handle">
+            <Button Color="ButtonColor.Primary" @onclick="() => EstateDetails(estates.Id)"><Icon Name="IconName.FileText" /> Details</Button>
+        </TemplateColumn>
+    </QuickGrid>
+
+    <Paginator State="@pagination"></Paginator>
     <table class="table">
         <thead>
             <tr>
@@ -111,17 +151,34 @@ else
                 @* <td><button class="btn btn-primary" @onclick="@(() => EstateEdit(@estate.Id))">Edit</button></td> *@
                 <td><button class="btn btn-primary" @onclick="@(() => EstateDetails(@estate.Id))">Details</button></td>
             </tr>
-
         }
-
     </thead>
 </table>
 
 @code {
-
     List<Estate> estates = new List<Estate>();
     List<Category> categories = new List<Category>();
     List<County> counties = new List<County>();
+    string? filteredText;
+    IQueryable<Estate> FilteredEstates
+    {
+        get
+        {
+            var result = estates.AsQueryable();
+            if(!string.IsNullOrEmpty(filteredText))
+            {
+                result = result.Where(e => e.County.CountyName.Contains(filteredText, StringComparison.CurrentCultureIgnoreCase)
+                || e.Category.EstateCategory.Contains(filteredText, StringComparison.CurrentCultureIgnoreCase)
+                || e.Realtor.FirstName.Contains(filteredText, StringComparison.CurrentCultureIgnoreCase)
+                || e.NumberOfRooms.Equals(int.Parse(filteredText))
+                || e.LivingAreaKvm.Equals(int.Parse(filteredText))
+                || e.StartingPrice.Equals(int.Parse(filteredText)));
+            }
+            return result;
+        }
+    }
+    PaginationState pagination = new PaginationState { ItemsPerPage = 10 };
+
     // List<RealtorFirm> realtoFirms = new List<RealtorFirm>();
     // List<Realtor> realtors = new List<Realtor>();
 
@@ -132,20 +189,16 @@ else
         var result = await http.GetFromJsonAsync<List<Estate>>("https://localhost:7190/api/Estate");
         var category = await http.GetFromJsonAsync<List<Category>>("https://localhost:7190/api/Category");
         var county = await http.GetFromJsonAsync<List<County>>("https://localhost:7190/api/County");
-        // var realtorFirm = await http.GetFromJsonAsync<List<RealtorFirm>>("https://localhost:7190/api/RealtorFirm");
-        // var realtor = await http.GetFromJsonAsync<List<Realtor>>("https://localhost:7190/api/Realtor");
+
         if (result is not null) estates = result;
         if (category is not null) categories = category;
         if (county is not null) counties = county;
-        // if (realtorFirm is not null) realtoFirms = realtorFirm;
-        // if (realtor is not null) realtors = realtor;
     }
 
     void EstateAdd()
     {
         NavigationManager.NavigateTo("EstateAdd");
     }
-
     void EstateEdit(int id)
     {
         NavigationManager.NavigateTo($"EstateEdit/{id}");
@@ -154,8 +207,6 @@ else
     {
         NavigationManager.NavigateTo($"EstateDetails/{id}");
     }
-
-
 }
 
     @*Need to add null check and fix for when calling objects so that the site will load even if and object is broken. Currently when calling on
