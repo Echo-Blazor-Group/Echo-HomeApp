@@ -23,7 +23,7 @@ namespace Services
         // SessionStorage is used to store data in secure cookies.
         private ISessionStorageService _sessionStorageService;
 
-        // Key string for key-value pair stored inside session, initialized as its own name as convention for constant strings
+        // Key string for key-value pair stored inside session, initialized as it's own name as convention for constant strings
         private const string JWT_KEY = nameof(JWT_KEY);
 
         // String variable used to cache the token from the sessionStorage to be used by the client
@@ -48,7 +48,7 @@ namespace Services
             try
             {
                 // Catch a response message from the API endpoint
-                response = await _httpClientFactory.CreateClient().PostAsJsonAsync<RealtorLoginDTO>("https://localhost:7190/api/Realtor/login", userLogin);
+                response = await _httpClientFactory.CreateClient("ServerApi").PostAsJsonAsync<RealtorLoginDTO>("https://localhost:7190/api/Realtor/login", userLogin);
             }
             catch (WebException ex)
             {

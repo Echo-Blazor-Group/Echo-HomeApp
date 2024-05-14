@@ -5,7 +5,7 @@ namespace Handlers
 {
     /// <summary>
     /// Author: Samed Salman
-    /// This class handles adding the JWT to the API-request every time the httpClient makes a call
+    /// This class handles adding the JWT to API-requests made by the httpClient
     /// </summary>
     public class AuthenticationHandler : DelegatingHandler
     {
