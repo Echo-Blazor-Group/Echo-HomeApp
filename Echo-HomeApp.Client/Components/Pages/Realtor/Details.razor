@@ -7,7 +7,7 @@
 <PageTitle>Edit realtor</PageTitle>
 
 <div>
-    @if (Realtor is null)
+    @if (Realtor is null || EstatesTiedToRealtor is null)
     {
         <p><em>Loading...</em></p>
     }
@@ -52,9 +52,6 @@
                         <ValidationMessage For="() => RealtorToEdit.ProfilePicture" class="text-danger" />
                     </div>
 
-                    <div class="mb-3">
-                        <img src="@RealtorToEdit.ProfilePicture" alt="Add a profile picture!" width="200rem" />
-                    </div>
                     <div class="mb-3 form-check">
                         <input type="checkbox" id="changePassword" class="form-check-input" @onclick="TogglePasswordFields" />
                         <label class="form-check-label" for="changePassword">Change password?</label>
@@ -75,8 +72,51 @@
                     }
 
                 </EditForm>
+
             </div>
+            @if (EstatesTiedToRealtor.Any())
+            {
+
+                <div class="col-md-4">
+                    <label for="estatesDropdown" class="form-label">Estates Assigned to You</label>
+                    <select id="estatesDropdown" class="form-select" size="3" @onchange="UpdateSelectedEstateId">
+                        @foreach (var estate in EstatesTiedToRealtor)
+                        {
+                            <option value="@estate.Id">@estate.Address</option>
+                        }
+                    </select>
+                    @if (selectedEstateId is not null)
+                    {
+                        <Button Color="ButtonColor.Secondary" @onclick="RedirectToEstateDetails"> <Icon Name="IconName.ArrowLeftCircle" /> View Estate Details</Button>
+                    }
+                    else
+                    {
+                        <Button Color="ButtonColor.Secondary" @onclick="RedirectToEstateDetails" disabled> <Icon Name="IconName.ArrowLeftCircle" /> View Estate Details</Button>
+                    }
+
+                </div>
+                <div class="col-md-4">
+                    <img src="@RealtorToEdit.ProfilePicture" alt="Add a profile picture!" width="200rem" />
+                </div>
+
+            }
+            else
+            {
+                <div class="col-md-4">
+                    <p>No Estates Assigned to You!</p>
+                </div>
+
+                <div class="col-md-4">
+                    <img src="@RealtorToEdit.ProfilePicture" alt="Add a profile picture!" width="200rem" />
+                </div>
+            }
+
+
         </div>
+
+
+
+
     }
 </div>
 <div>
@@ -123,6 +163,10 @@
     [SupplyParameterFromForm]
     public RealtorEditDTO RealtorToEdit { get; set; } = new();
 
+    public List<Estate>? EstatesTiedToRealtor { get; set; } = null;
+
+    private string? selectedEstateId = null;
+
     protected override async Task OnInitializedAsync()
     {
 
@@ -137,6 +181,26 @@
         RealtorToEdit.ProfilePicture = Realtor.ProfilePicture;
         RealtorToEdit.OldPassword = string.Empty;
         RealtorToEdit.NewPassword = string.Empty;
+
+
+        var allEstates = await httpClient.GetFromJsonAsync<List<Estate>?>("https://localhost:7190/api/Estate");
+        if (allEstates is null || !allEstates.Any())
+        {
+            EstatesTiedToRealtor = new List<Estate>();
+        }
+        else
+        {
+            allEstates = allEstates.Where(e => e.Realtor?.Id == Id && e.OnTheMarket == true).ToList();
+
+            if (allEstates.Any())
+            {
+                EstatesTiedToRealtor = allEstates;
+            }
+            else
+            {
+                EstatesTiedToRealtor = new List<Estate>();
+            }
+        }
     }
 
     private void TogglePasswordFields()
@@ -181,6 +245,24 @@
     private async Task HideDeleteConfirmationModalAsync()
     {
         await confirmationModalDelete.HideAsync();
+    }
+    private void UpdateSelectedEstateId(ChangeEventArgs e)
+    {
+        if (e?.Value?.ToString() is null || e.Value.ToString() == string.Empty)
+        {
+            selectedEstateId = string.Empty;
+        }
+        else
+        {
+            selectedEstateId = e.Value.ToString();
+        }
+    }
+    private void RedirectToEstateDetails()
+    {
+        if (!string.IsNullOrEmpty(selectedEstateId))
+        {
+            NavigationManager.NavigateTo($"/EstateDetails/{selectedEstateId}");
+        }
     }
 }
 
