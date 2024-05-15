@@ -1,5 +1,6 @@
 ﻿@inherits LayoutComponentBase
 @using DTOs.RealtorDTOs
+@using Echo_HomeApp.Client.Components.Components
 
 <Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.TopRight" />
 
@@ -38,25 +39,14 @@
                     </NavLink>
                 </li>
                 <li class="nav-item">
-                    <NavLink class="nav-link" href="/login">
-                        <span class="oi oi-plus" aria-hidden="true"></span> Login
-                    </NavLink>
+                    <UserState />
                 </li>
-                @* @if(realtor has value)
-                {
-                    <li class="nav-item">
-                        <NavLink class="nav-link" href="/login">
-                            <span class="oi oi-plus" aria-hidden="true"></span> Name, role, company
-                        </NavLink>
-                    </li>
-                } *@
             </ul>
         </div>
     </div>
 </nav>
 
 @code {
-    RealtorGetDTO realtorGetDTO = new();
 
     private bool collapseNavMenu = true;
     private string? NavBarCssClass => collapseNavMenu ? null : "show";
@@ -64,7 +54,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // TODO: (Samed) Get realtor name to display. token sparad i session = kan du injicera httpcontext och hämta info där? 
     }
 
     private void ToggleNavMenu()

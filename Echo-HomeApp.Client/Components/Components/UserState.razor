@@ -1,0 +1,42 @@
+﻿@using Services
+@inject IAuthenticationService AuthenticationService
+
+@* If a user is logged in, display user name and show logout button *@
+@if(isLoggedIn)
+{
+    <p>@userName</p>
+    <Button Type="ButtonType.Button" value="Logout" />
+}
+@* Else, show login link *@
+else
+{
+    <li class="nav-item">
+        <NavLink class="nav-link" href="/login">
+            <span class="oi oi-plus" aria-hidden="true"></span> Login
+        </NavLink>
+    </li>
+}
+
+@code {
+    private string? userName;
+    // User is logged in if the LoginChange event holds a name string
+    private bool isLoggedIn => userName is not null;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        // Extract userName from LoginChange event
+        AuthenticationService.LoginChange += name =>
+        {
+            userName = name;
+        };
+        // Refresh rendering
+        StateHasChanged();
+    }
+
+    private async Task LogoutAsync()
+    {
+        await AuthenticationService.LogoutAsync();
+    }
+}
