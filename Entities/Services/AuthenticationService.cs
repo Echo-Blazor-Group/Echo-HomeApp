@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System;
 using System.Text.Json;
 using System.Net.Http;
+using Microsoft.AspNetCore.Components;
 
 namespace Services
 {
@@ -71,7 +72,7 @@ namespace Services
             await _sessionStorageService.SetItemAsync(JWT_KEY, content.Token);
 
             // Invoke the event LoginChange to get user name from token
-            LoginChange?.Invoke(GetUserName(content.Token.ToString()));
+            LoginChange?.Invoke(GetUserName(content.Token!));
 
 
             // Create a JwtSecurityTokenHandler to parse token
