@@ -1,7 +1,5 @@
 ﻿@page "/EstateDetails/{id:int}"
-@using DTOs
-@using Models
-@using System.Text.Json
+
 @inject HttpClient http
 @inject NavigationManager NavigationManager
 @rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
@@ -70,7 +68,6 @@ else
             </tr>
             
                 <p width="200px">@_Estate.EstateDescription</p>
-            
 
             <tr>
                 @foreach (var picture in _Estate.Pictures)
@@ -123,7 +120,7 @@ else
     </EditForm>
     <p></p>
     <div>
-        <img src="@_Picture.PictureUrl" width="400px" />
+        <img src="@_Picture.PictureUrl" width="800px" />
     </div>
 }
 @if (WishToAddImages == true)
@@ -154,7 +151,6 @@ else
 
     // placeholder="@Id"
     public int? PictureId { get; set; }
-
 
     [SupplyParameterFromForm]
     public PictureDto _Picture { get; set; } = new PictureDto();

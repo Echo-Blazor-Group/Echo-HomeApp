@@ -1,41 +1,38 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json;
-
-namespace Models
+﻿namespace DTOs.EstateDtos
 {
-
-    //Author Gustaf
-    public class Estate
+    public class UpdateEstateDto
     {
+        //Id needed for finding the correct object via the api updating endpoint.
         public int Id { get; set; }
-        [Required]
         public string Address { get; set; } = string.Empty;
-        [Required]
         public int StartingPrice { get; set; }
-        [Required]
+
         public int LivingAreaKvm { get; set; }
-        [Required]
+
         public int NumberOfRooms { get; set; }
-        [Required]
+
         public int BiAreaKvm { get; set; }
-        [Required]
+
         public int EstateAreaKvm { get; set; }
-        [Required]
+
         public int MonthlyFee { get; set; }
-        [Required]
+
         public int RunningCosts { get; set; }
-        [Required]
+
         public DateOnly? ConstructionDate { get; set; }
-        [Required]
+
         public string EstateDescription { get; set; } = string.Empty;
-        [Required]
+
         public DateOnly? PublishDate { get; set; } = new DateOnly();
+
+        //bool for setting of the object should show up on lists or not.
         public bool OnTheMarket { get; set; } = true;
 
-        //Relational
-        public County? County { get; set; }
-        public Realtor? Realtor { get; set; }
-        public Category? Category { get; set; }
-        public List<Picture> Pictures { get; set; }
+        //Relational forgine keys because this is an update object
+        //and only needs to change the Id of what ever object it should be connected to
+        public int CountyId { get; set; }
+        public int CategoryId { get; set; }
+        public string? RealtorId { get; set; }
+
     }
 }
