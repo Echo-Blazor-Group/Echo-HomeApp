@@ -1,6 +1,7 @@
 using BlazorBootstrap;
 using Blazored.SessionStorage;
 using Echo_HomeApp.Components;
+using Handlers;
 using Microsoft.Extensions.Options;
 using Services;
 
@@ -13,6 +14,32 @@ namespace Echo_HomeApp
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            // AuthenticationHandler passes JWT back to API along with HttpClient-requests
+            builder.Services.AddTransient<AuthenticationHandler>();
+
+            // Add IHttpClientFactory for use in singleton services
+            builder.Services.AddHttpClient("ServerApi", client =>
+            {
+                client.BaseAddress = new Uri(builder.Configuration["ServerApi : BaseAddress"]);
+            }).AddHttpMessageHandler<AuthenticationHandler>();
+
+            // Configure HttpClient that is used for injection in components
+            //builder.Services.AddTransient(sp =>
+            //{
+            //    var handler = new HttpClientHandler();
+            //    var authHandler = sp.GetService<AuthenticationHandler>();
+            //    authHandler.InnerHandler = handler;
+
+            //    return new HttpClient(authHandler)
+            //    {
+            //        BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
+            //    };
+            //});
+
+
+            // Services for authentication as singletons for longer lifespan
+            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+            builder.Services.AddBlazoredSessionStorage();
             builder.Services.AddRazorComponents().AddInteractiveWebAssemblyComponents();
             
             builder.Services.AddBlazorBootstrap();
