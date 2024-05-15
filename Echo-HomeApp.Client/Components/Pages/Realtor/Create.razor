@@ -16,7 +16,7 @@ else
     <div class="row">
         <div class="col-md-4">
             <EditForm method="post" Model="Realtor" OnValidSubmit="ShowCreateConfirmationModalAsync" FormName="create">
-                <DataAnnotationsValidator /> <ValidationSummary />
+                <DataAnnotationsValidator />
                 <div class="mb-3">
                     <label for="FirstName" class="form-label">First name: </label>
                     <InputText id="FirstName" @bind-Value="Realtor.FirstName" class="form-control" />
