@@ -19,6 +19,7 @@ builder.Services.AddTransient<AuthenticationHandler>();
 builder.Services.AddHttpClient("ServerApi").
     ConfigureHttpClient(c => c.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)).AddHttpMessageHandler<AuthenticationHandler>();
 
+builder.Services.AddWMBSC();
 // Configure HttpClient that is used for injection in components
 builder.Services.AddTransient(sp =>
 {

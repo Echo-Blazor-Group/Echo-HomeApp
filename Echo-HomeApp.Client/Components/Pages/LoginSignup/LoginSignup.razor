@@ -1,4 +1,5 @@
 ﻿@page "/login"
+@using Echo_HomeApp.Client.Components.Components
 @using Services
 @inject HttpClient httpClient
 @inject IAuthenticationService AuthenticationService
@@ -14,55 +15,31 @@
 
 <PageTitle>Login</PageTitle>
 
-<h1>Login</h1>
-
-<fieldset disabled="@(expiration is not null)">
-    <EditForm method="post" Model="RealtorLogin" OnValidSubmit="OnValidSubmit">
-        <DataAnnotationsValidator />
-        <div class="mb-3>">
-            <label for="email" class="form-label">Email: </label>
-            <InputText id="email" @bind-Value="RealtorLogin.Email"></InputText>
-            <ValidationMessage For="() => RealtorLogin.Email" class="text-danger" />
+<div class="container">
+    <div class="row justify-content-left">
+        <div class="col-md-4 mb-3">
+            <fieldset disabled="@(expiration is not null)">
+                <LoginForm OnLoginSuccess="HandleLoginSuccess" />
+            </fieldset>
         </div>
-        <div class="mb-3>">
-            <label for="password" class="form-label">Password: </label>
-            <InputText id="password" @bind-Value="RealtorLogin.Password"></InputText>
-            <ValidationMessage For="() => RealtorLogin.Password" class="text-danger" />
+        <div class="col-md-4 mb-3 offset-md-1">
+            <fieldset>
+                <RealtorCreateForm />
+            </fieldset>
         </div>
-        <div>
-            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary"><Icon Name="IconName.DoorOpen" /> Login</Button>
-        </div>
-        @* If-statements below for debugging *@
-        @if(expiration is not null)
-        {
-            <p>You are logged in until @expiration?.ToLongTimeString()</p>
-        }
-
-        @if(errorMessage is not null)
-        {
-            <p class="text-danger">@errorMessage</p>
-        }
-    </EditForm>
-</fieldset>
+    </div>
+</div>
 
 
 @code {
-    // TODO: (Samed) EV. plocka ut Login och Signup till separata components som kan vara på samma sida
-    public RealtorLoginDTO RealtorLogin { get; set; } = new();
     private DateTime? expiration;
-    private string? errorMessage;
 
-    private async Task OnValidSubmit()
+    private void HandleLoginSuccess(DateTime? loginExpiration)
     {
-        try
+        expiration = loginExpiration;
+        if (expiration != null)
         {
-            expiration = await AuthenticationService.LoginAsync(RealtorLogin);
-            errorMessage = null;
-        }
-        catch (Exception ex)
-        {
-            expiration = null;
-            errorMessage = ex.Message;
+            NavigationManager.NavigateTo("/");
         }
     }
 }

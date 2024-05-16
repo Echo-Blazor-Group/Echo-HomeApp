@@ -4,6 +4,13 @@
 @inject NavigationManager NavigationManager
 @rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
 
+@{
+    ///<summary>
+    /// Author: Samed
+    /// This component checks if a user is logged in and displays login link, alternatively user name and logout button
+    ///</summary>
+}
+
 @* If a user is logged in, display user name and show logout button *@
 @if(isLoggedIn)
 {
@@ -29,6 +36,7 @@ else
 
 
 @code {
+    // Variable to display name
     private string? userName;
     // User is logged in if the LoginChange event holds a name string
     private bool isLoggedIn => userName is not null;

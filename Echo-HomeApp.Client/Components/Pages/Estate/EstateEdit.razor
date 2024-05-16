@@ -1,10 +1,9 @@
 ﻿@page "/EstateAdd"
 @page "/EstateEdit/{id:int}"
+@using DTOs.EstateDtos
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 @rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
-@using DTOs
-@using System.Linq;
 
 @*Author Gustaf not as cool as Sameds page function but it works*@
 @* checking if the navigation is bringing along an Id to se if its going to edit or add an estate*@
@@ -28,31 +27,31 @@ else
     </div>
     <div>
         <label onformchange="LivingAreaKvm"> LivingAreaKvm </label>
-        <InputText id="LivingAreaKvm" @bind-Value="_Estate.LivingAreaKvm" class="form-control" />
+        <InputNumber id="LivingAreaKvm" @bind-Value="_Estate.LivingAreaKvm" class="form-control" />
     </div>
     <div>
         <label onformchange="NumberOfRooms"> NumberOfRooms </label>
-        <InputText id="NumberOfRooms" @bind-Value="_Estate.NumberOfRooms" class="form-control" />
+        <InputNumber id="NumberOfRooms" @bind-Value="_Estate.NumberOfRooms" class="form-control" />
     </div>
     <div>
         <label onformchange="BiAreaKvm"> BiAreaKvm </label>
-        <InputText id="BiAreaKvm" @bind-Value="_Estate.BiAreaKvm" class="form-control" />
+        <InputNumber id="BiAreaKvm" @bind-Value="_Estate.BiAreaKvm" class="form-control" />
     </div>
     <div>
         <label onformchange="EstateAreaKvm"> EstateAreaKvm </label>
-        <InputText id="EstateAreaKvm" @bind-Value="_Estate.EstateAreaKvm" class="form-control" />
+        <InputNumber id="EstateAreaKvm" @bind-Value="_Estate.EstateAreaKvm" class="form-control" />
     </div>
     <div>
         <label onformchange="MonthlyFee"> MonthlyFee </label>
-        <InputText id="MonthlyFee" @bind-Value="_Estate.MonthlyFee" class="form-control" />
+        <InputNumber id="MonthlyFee" @bind-Value="_Estate.MonthlyFee" class="form-control" />
     </div>
     <div>
         <label onformchange="RunningCosts"> RunningCosts </label>
-        <InputText id="RunningCosts" @bind-Value="_Estate.RunningCosts" class="form-control" />
+        <InputNumber id="RunningCosts" @bind-Value="_Estate.RunningCosts" class="form-control" />
     </div>
     <div>
         <label onformchange="ConstructionDate"> ConstructionDate </label>
-        <InputText id="ConstructionDate" @bind-Value="_Estate.ConstructionDate" class="form-control" />
+        <InputDate id="ConstructionDate" @bind-Value="_Estate.ConstructionDate" class="form-control" />
     </div>
     <div>
         <label onformchange="EstateDescription"> EstateDescription </label>
@@ -147,9 +146,13 @@ else
         //These make sure that the base value of the EditForms input is that of the incomming objects value.
         //So if the Realtor is Samed then the InputSelect will have automatically selected Samed so that the
         //user won't have to find the correct realtor everytime they want to change a single field
-        _Estate.CategoryId = _Estate1.Category.Id;
-        _Estate.CountyId = _Estate1.County.Id;
-        _Estate.RealtorId = _Estate1.Realtor.Id;
+        if(Id is not null)
+        {
+            _Estate.CategoryId = _Estate1.Category.Id;
+            _Estate.CountyId = _Estate1.County.Id;
+            _Estate.RealtorId = _Estate1.Realtor.Id;
+        }
+
     }
 
     async Task HandleSubmit()

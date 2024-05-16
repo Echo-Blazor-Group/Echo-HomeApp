@@ -25,20 +25,6 @@ namespace Echo_HomeApp
                 client.BaseAddress = new Uri(builder.Configuration["ServerApi : BaseAddress"]);
             }).AddHttpMessageHandler<AuthenticationHandler>();
 
-            // Configure HttpClient that is used for injection in components
-            //builder.Services.AddTransient(sp =>
-            //{
-            //    var handler = new HttpClientHandler();
-            //    var authHandler = sp.GetService<AuthenticationHandler>();
-            //    authHandler.InnerHandler = handler;
-
-            //    return new HttpClient(authHandler)
-            //    {
-            //        BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
-            //    };
-            //});
-
-
             // Services for authentication as singletons for longer lifespan
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
             builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();
