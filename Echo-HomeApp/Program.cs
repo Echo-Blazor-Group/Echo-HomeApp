@@ -1,7 +1,9 @@
+using AuthState;
 using BlazorBootstrap;
 using Blazored.SessionStorage;
 using Echo_HomeApp.Components;
 using Handlers;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Options;
 using Services;
 
@@ -25,9 +27,11 @@ namespace Echo_HomeApp
 
             // Services for authentication as singletons for longer lifespan
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+            builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();
             builder.Services.AddBlazoredSessionStorage();
             builder.Services.AddRazorComponents().AddInteractiveWebAssemblyComponents();
-            
+
+            builder.Services.AddAuthorization();
             builder.Services.AddBlazorBootstrap();
 
             var app = builder.Build();

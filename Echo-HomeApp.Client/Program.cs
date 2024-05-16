@@ -1,5 +1,7 @@
+using AuthState;
 using Blazored.SessionStorage;
 using Handlers;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Services;
@@ -31,6 +33,7 @@ builder.Services.AddTransient(sp =>
     };
 });
 
+builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();
 
 // Services for authentication as singletons for longer lifespan
 builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();

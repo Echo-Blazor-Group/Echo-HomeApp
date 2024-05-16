@@ -8,6 +8,7 @@ using System;
 using System.Text.Json;
 using System.Net.Http;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Services
 {
@@ -38,14 +39,16 @@ namespace Services
         {
             _httpClientFactory = httpClientFactory;
             _sessionStorageService = sessionStorageService;
+            
         }
 
 
+        
         // Method to catch, read and store JWT
         public async Task<DateTime> LoginAsync(RealtorLoginDTO userLogin)
         {
             HttpResponseMessage response = new();
-
+            
             try
             {
                 // Catch a response message from the API endpoint
@@ -70,7 +73,6 @@ namespace Services
 
             // Store the recieved JWT token together with a key string
             await _sessionStorageService.SetItemAsync(JWT_KEY, content.Token);
-
             // Invoke the event LoginChange to get user name from token
             LoginChange?.Invoke(GetUserName(content.Token!));
 
@@ -87,9 +89,11 @@ namespace Services
         // Get JWT from session storage as a cache variable
         public async ValueTask<string> GetJwtAsync()
         {
+            
             // If the cache variable is empty
             if (string.IsNullOrEmpty(_jwtCache))
             {
+
                 // Cache current JWT from sessionStorage
                 _jwtCache = await _sessionStorageService.GetItemAsync<string>(JWT_KEY);
             }
@@ -115,5 +119,7 @@ namespace Services
             // Get name value from JWT
             return jwt.Claims.First(c => c.Type == JwtRegisteredClaimNames.Email).Value;
         }
+
+        
     }
 }
