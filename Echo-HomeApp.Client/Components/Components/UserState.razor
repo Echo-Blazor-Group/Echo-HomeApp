@@ -1,4 +1,5 @@
 ﻿@using Services
+@using Microsoft.AspNetCore.Components.Authorization
 @inject IAuthenticationService AuthenticationService
 @inject NavigationManager NavigationManager
 @rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
@@ -25,6 +26,7 @@ else
         </NavLink>
     </li>
 }
+
 
 @code {
     private string? userName;
