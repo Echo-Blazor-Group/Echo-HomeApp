@@ -1,5 +1,6 @@
 using Blazored.SessionStorage;
 using Handlers;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Services;
@@ -8,7 +9,6 @@ using Services;
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 // Author: Samed
-
 
 // AuthenticationHandler passes JWT back to API along with HttpClient-requests
 builder.Services.AddTransient<AuthenticationHandler>();
@@ -35,7 +35,7 @@ builder.Services.AddTransient(sp =>
 // Services for authentication as singletons for longer lifespan
 builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
 builder.Services.AddBlazoredSessionStorageAsSingleton();
-
+builder.Services.AddSingleton<AuthenticationStateProvider, RealtorAuthenticationStateProvider>();
 builder.Services.AddBlazorBootstrap();
 
 await builder.Build().RunAsync();

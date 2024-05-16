@@ -8,6 +8,8 @@ using System;
 using System.Text.Json;
 using System.Net.Http;
 using Microsoft.AspNetCore.Components;
+using Helpers;
+using System.Reflection.Metadata;
 
 namespace Services
 {
@@ -33,11 +35,15 @@ namespace Services
         // Event fires whenever the login status changes
         public event Action<string?>? LoginChange;
 
+        // Event fires from separate class to notify RealtorAuthenticationStateProvider
+        private readonly NotifyAuthState _notifyAuthState;
+
         // Inject HttpClient and SessionStorageService
-        public AuthenticationService(IHttpClientFactory httpClientFactory, ISessionStorageService sessionStorageService)
+        public AuthenticationService(IHttpClientFactory httpClientFactory, ISessionStorageService sessionStorageService, NotifyAuthState notifyAuthState)
         {
             _httpClientFactory = httpClientFactory;
             _sessionStorageService = sessionStorageService;
+            _notifyAuthState = notifyAuthState;
         }
 
 
@@ -73,7 +79,7 @@ namespace Services
 
             // Invoke the event LoginChange to get user name from token
             LoginChange?.Invoke(GetUserName(content.Token!));
-
+            await _notifyAuthState.UserLoggedInAsync(GetUserName(content.Token!));
 
             // Create a JwtSecurityTokenHandler to parse token
             var handler = new JwtSecurityTokenHandler();
@@ -105,6 +111,7 @@ namespace Services
             _jwtCache = null;
             // Invoke Login event and set it to null (to remove user name)
             LoginChange?.Invoke(null);
+            await _notifyAuthState.UserLoggedInAsync(null);
         }
 
         // Use JWT to retrieve user name
